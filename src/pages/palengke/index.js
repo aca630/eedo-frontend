@@ -1,0 +1,397 @@
+import { BookOutlined, BuildOutlined, CalendarOutlined, CarOutlined, CarTwoTone, ContactsOutlined, DeleteOutlined, DownOutlined, EditOutlined, GroupOutlined, InsertRowBelowOutlined, InsertRowLeftOutlined, PlusCircleOutlined, PlusOutlined, SearchOutlined, ShopOutlined, ShoppingCartOutlined, ShopTwoTone, SnippetsOutlined, UserAddOutlined, UserDeleteOutlined, UsergroupAddOutlined, UserOutlined } from "@ant-design/icons";
+import { Button, Divider, Dropdown, Form, Input, Modal, Popconfirm, Select, Space, Spin, Table, Tag } from "antd";
+import Cookies from "js-cookie";
+import Head from "next/head";
+import { useRouter } from "next/router";
+import { useEffect, useState } from "react";
+import Layout from "../layouts";
+import { ToastContainer, toast } from 'react-toastify';
+import { GetOverAllDispenseCashTicketsPerName, GetOverAllReports } from "../api/reports";
+import moment from "moment";
+import React from 'react';
+import dayjs from 'dayjs';
+import customParseFormat from 'dayjs/plugin/customParseFormat';
+
+
+
+import dynamic from "next/dynamic";
+import Link from "next/link";
+
+// Dynamically import only on client
+const ReactApexChart = dynamic(() => import("react-apexcharts"), { ssr: false });
+
+dayjs.extend(customParseFormat);
+
+export default function Home() {
+    const router = useRouter();
+    const [from, setFrom] = useState(moment().format('yyyy-MM-DD'))
+    const [to, setTo] = useState(moment().add(1, 'days').format('yyyy-MM-DD'))
+    const [totalTransaction, settotalTransaction] = useState(0)
+    const [data, setData] = useState([])
+    const [data_per_name, set_data_per_name] = useState([])
+    const [data5pm, setData5pm] = useState([])
+    const [data9pm, setData9pm] = useState([])
+    const [dataPie, setdataPie] = useState([])
+    const [isfetching, Setisfetching] = useState(false);
+    const [isRender, setIsrender] = useState(false);
+    const [data2, setData2] = useState([{ item: 1 }])
+
+
+    const handleGetOverAllReports = async () => {
+        Setisfetching(true)
+
+        try {
+
+            let ApiResponse = await GetOverAllReports({
+                from: from,
+                to: to
+            })
+
+            setData(ApiResponse?.data?.data)
+            // settotalTransaction(ApiResponse?.data?.data[4][0]);
+
+        } catch (error) {
+
+            console.log('Error getting data: ', error);
+        }
+        Setisfetching(false)
+    }
+
+    const handleGetOverAllDispenseCashTicketsPerName = async () => {
+        Setisfetching(true)
+
+        try {
+
+            let ApiResponse = await GetOverAllDispenseCashTicketsPerName({
+                from: from,
+                to: to
+            })
+
+            set_data_per_name(ApiResponse?.data?.data)
+            // settotalTransaction(ApiResponse?.data?.data[4][0]);
+
+        } catch (error) {
+
+            console.log('Error getting data: ', error);
+        }
+        Setisfetching(false)
+    }
+
+    
+
+    useEffect(() => {
+        handleGetOverAllReports()
+        handleGetOverAllDispenseCashTicketsPerName()
+        setTimeout(() => {
+            setIsrender(true)
+        }, 3000);
+
+    }, [])
+
+    useEffect(() => {
+        if (data.length > 1) {
+            setIsrender(true)
+        }
+    }, [data])
+
+
+
+    function getAllGross() {
+
+        var TotalGross = 0;
+        data?.map((item, key) => {
+
+            TotalGross += (item?.TotalOveAllGross);
+        })
+
+
+        return TotalGross
+    }
+
+
+    function getAllHits() {
+
+        var TotalHits = 0;
+        data?.map((item, key) => {
+            TotalHits += item?.TotalOveAllHits
+        })
+
+
+        return TotalHits
+    }
+
+
+
+
+
+
+
+    const handleButtonClick = (e) => {
+        console.log(e);
+    };
+    const handleMenuClick = (e) => {
+        console.log(e);
+    };
+    const items = [
+        {
+            label: '1st menu item',
+            key: '1',
+            icon: <UserOutlined />,
+        },
+        {
+            label: '2nd menu item',
+            key: '2',
+            icon: <UserOutlined />,
+        },
+        {
+            label: '3rd menu item',
+            key: '3',
+            icon: <UserOutlined />,
+            danger: true,
+        },
+        {
+            label: '4rd menu item',
+            key: '4',
+            icon: <UserOutlined />,
+            danger: true,
+            disabled: true,
+        },
+    ];
+    const menuProps = {
+        items,
+        onClick: handleMenuClick,
+    };
+
+
+    const onChange = (date, dateString) => {
+        console.log(dateString);
+
+        setFrom(dateString)
+        setTo(moment(dateString).add(1, 'days').format('yyyy-MM-DD'))
+    };
+
+    useEffect(() => {
+
+        handleGetOverAllReports()
+
+    }, [from, to])
+
+    const chartData = {
+
+        series: [
+            {
+                name: "Collections",
+                data: [168, 385, 201, 298, 187, 195, 291, 110, 215, 390, 280, 112],
+            },
+        ],
+        options: {
+            plotOptions: {
+                bar: {
+                    distributed: true, // enable per-bar colors
+                },
+            },
+            colors: ["#3B82F6", "#F97316", "#10B981", "#EF4444", "#8B5CF6"],
+            chart: {
+                type: "bar",
+                height: 350,
+            },
+            stroke: {
+                curve: "smooth",
+            },
+            xaxis: {
+                categories: [
+                    "Jan",
+                    "Feb",
+                    "Mar",
+                    "Apr",
+                    "May",
+                    "Jun",
+                    "Jul",
+                    "Aug",
+                    "Sep",
+                    "Oct",
+                    "Nov",
+                    "Dec",
+                ],
+            },
+            title: {
+                text: "Monthly Collections",
+                align: "left",
+            },
+        },
+    };
+
+    return (
+
+
+        <Layout>
+            <Head>
+                <title>EEDO</title>
+                <meta name="description" content="Generated by create next app" />
+                <meta name="viewport" content="width=device-width, initial-scale=1" />
+                <link rel="icon" href="/favicon.ico" />
+            </Head>
+
+            {
+
+                !isfetching ?
+                    <>
+
+                        {/* <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="bg-white p-4 rounded shadow">Palengke</div>
+              <div className="bg-white p-4 rounded shadow">Terminal</div>
+              <div className="bg-white p-4 rounded shadow">Slaughter</div>
+              <div className="bg-white p-4 rounded shadow">Cemetery</div>
+            </div> */}
+
+                        <div>
+                            <h1 className="text-center text-purple-600">Palengke</h1>
+                        </div>
+
+                        <main className="p-6 space-y-6">
+                            {/* Stat Cards */}
+                            <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
+
+                                <Link href="/palengke/areas">
+
+                                    <div className="bg-white p-6 rounded-lg shadow flex items-center space-x-4">
+
+                                        <div className="flex items-center justify-center w-12 h-12 bg-gray-300 rounded-xl dark:bg-gray-800">
+
+                                            <BuildOutlined className=" text-4xl text-purple-600" />
+                                        </div>
+
+
+                                        <div>
+                                            <p className="text-2xl font-bold text-purple-600">Areas/Buildings</p>
+
+                                        </div>
+                                    </div>
+
+                                </Link>
+
+                                <Link href="/palengke/sections">
+
+                                    <div className="bg-white p-6 rounded-lg shadow flex items-center space-x-4">
+
+                                        <div className="flex items-center justify-center w-12 h-12 bg-gray-300 rounded-xl dark:bg-gray-800">
+
+                                            <InsertRowLeftOutlined className=" text-4xl text-purple-600" />
+                                        </div>
+
+
+                                        <div>
+                                            <p className="text-2xl font-bold text-purple-600">Sections</p>
+
+                                        </div>
+                                    </div>
+
+                                </Link>
+
+                                <Link href="/palengke/collectors">
+
+                                    <div className="bg-white p-6 rounded-lg shadow flex items-center space-x-4">
+
+                                        <div className="flex items-center justify-center w-12 h-12 bg-gray-300 rounded-xl dark:bg-gray-800">
+
+                                            <UserOutlined className=" text-4xl text-purple-600" />
+                                        </div>
+
+
+                                        <div>
+                                            <p className="text-2xl font-bold text-purple-600">Collectors</p>
+
+                                        </div>
+                                    </div>
+
+                                </Link>
+
+                                <Link href="/palengke/occupants">
+
+                                    <div className="bg-white p-6 rounded-lg shadow flex items-center space-x-4">
+
+                                        <div className="flex items-center justify-center w-12 h-12 bg-gray-300 rounded-xl dark:bg-gray-800">
+
+                                            <UsergroupAddOutlined className=" text-4xl text-purple-600" />
+                                        </div>
+
+
+                                        <div>
+                                            <p className="text-2xl font-bold text-purple-600">Occupants</p>
+
+                                        </div>
+                                    </div>
+
+                                </Link>
+
+
+                                <Link href="/palengke/cash_tickets">
+
+                                    <div className="bg-white p-6 rounded-lg shadow flex items-center space-x-4">
+
+                                        <div className="flex items-center justify-center w-12 h-12 bg-gray-300 rounded-xl dark:bg-gray-800">
+
+                                            <SnippetsOutlined className=" text-4xl text-purple-600" />
+                                        </div>
+
+
+                                        <div>
+                                            <p className="text-2xl font-bold text-purple-600">Cash Tickets</p>
+
+                                        </div>
+                                    </div>
+
+                                </Link>
+
+
+
+                                <Link href="/palengke/dispense_cash_tickets">
+
+                                    <div className="bg-white p-6 rounded-lg shadow flex items-center space-x-4">
+
+                                        <div className="flex items-center justify-center w-12 h-12 bg-gray-300 rounded-xl dark:bg-gray-800">
+
+                                            <SnippetsOutlined className=" text-4xl text-purple-600" />
+                                        </div>
+
+
+                                        <div>
+                                            <p className="text-xl font-bold text-purple-600">Cash Tickets monitoring</p>
+
+                                        </div>
+                                    </div>
+
+                                </Link>
+
+
+                            </div>
+
+                        </main>
+                        {/* <div className="mt-20">
+                            <ReactApexChart
+                                options={chartData.options}
+                                series={chartData.series}
+                                type="bar"
+                                height={350}
+                            />
+
+                        </div> */}
+
+                    </>
+                    : <div className="h-screen text-center noPrint">
+                        <Spin size="large" tip='Generating...' className="mt-20" />
+                    </div>
+            }
+
+
+
+
+
+
+            <ToastContainer />
+        </Layout>
+
+
+    )
+
+}
