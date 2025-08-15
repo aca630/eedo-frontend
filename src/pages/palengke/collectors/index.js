@@ -14,7 +14,7 @@ import dynamic from "next/dynamic";
 import Link from "next/link";
 import { deleteArea, GetArea, postArea, putArea } from "../../api/area";
 import { deleteCollector, GetCollector, postCollector } from "../../api/collector";
-import Password from "antd/es/input/Password";
+
 
 // Dynamically import only on client
 const ReactApexChart = dynamic(() => import("react-apexcharts"), { ssr: false });
