@@ -6,7 +6,6 @@ import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
 import Layout from "../layouts";
 import { ToastContainer, toast } from 'react-toastify';
-import { GetOverAllReports } from "../api/reports";
 import moment from "moment";
 import React from 'react';
 import dayjs from 'dayjs';
@@ -35,125 +34,6 @@ export default function Home() {
   const [isRender, setIsrender] = useState(false);
   const [data2, setData2] = useState([{ item: 1 }])
 
-
-  const handleGetOverAllReports = async () => {
-    Setisfetching(true)
-
-    try {
-
-      let ApiResponse = await GetOverAllReports({
-        from: from,
-        to: to
-      })
-
-      setData(ApiResponse?.data?.data)
-      // settotalTransaction(ApiResponse?.data?.data[4][0]);
-
-    } catch (error) {
-
-      console.log('Error getting data: ', error);
-    }
-    Setisfetching(false)
-  }
-
-
-
-  useEffect(() => {
-    handleGetOverAllReports()
-
-    setTimeout(() => {
-      setIsrender(true)
-    }, 5000);
-
-  }, [])
-
-  useEffect(() => {
-    if (data.length > 1) {
-      setIsrender(true)
-    }
-  }, [data])
-
-
-
-  function getAllGross() {
-
-    var TotalGross = 0;
-    data?.map((item, key) => {
-
-      TotalGross += (item?.TotalOveAllGross);
-    })
-
-
-    return TotalGross
-  }
-
-
-  function getAllHits() {
-
-    var TotalHits = 0;
-    data?.map((item, key) => {
-      TotalHits += item?.TotalOveAllHits
-    })
-
-
-    return TotalHits
-  }
-
-
-
-
-
-
-
-  const handleButtonClick = (e) => {
-    console.log(e);
-  };
-  const handleMenuClick = (e) => {
-    console.log(e);
-  };
-  const items = [
-    {
-      label: '1st menu item',
-      key: '1',
-      icon: <UserOutlined />,
-    },
-    {
-      label: '2nd menu item',
-      key: '2',
-      icon: <UserOutlined />,
-    },
-    {
-      label: '3rd menu item',
-      key: '3',
-      icon: <UserOutlined />,
-      danger: true,
-    },
-    {
-      label: '4rd menu item',
-      key: '4',
-      icon: <UserOutlined />,
-      danger: true,
-      disabled: true,
-    },
-  ];
-  const menuProps = {
-    items,
-    onClick: handleMenuClick,
-  };
-
-
-  const onChange = (date, dateString) => {
-    console.log(dateString);
-
-    setFrom(dateString)
-    setTo(moment(dateString).add(1, 'days').format('yyyy-MM-DD'))
-  };
-
-  useEffect(() => {
-
-    handleGetOverAllReports()
-
-  }, [from, to])
 
   const chartData = {
 
