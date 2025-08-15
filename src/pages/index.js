@@ -107,11 +107,12 @@ export default function Home() {
 
                   <div className='bg-purple-600 mb-2'>
                     <div className='flex justify-center'>
-                      <img height='200' alt='icon' className='rounded-full mt-10 mb-5' src={'/logo.jpg'} />
+                      <Image src={'/logo.jpg'} width={200}
+                        height={200} className=" rounded-full mt-10 mb-" alt="logo" />
                     </div>
                     <div className='text-center p-2'>
                       <h1 className='text-center text-white font-semibold'>
-                        Economic Enterprise Division's Office
+                        Economic Enterprise Division`s Office
                       </h1>
                       <p className='text-white  mt-2'>Admin Panel</p>
                       <br />
@@ -119,7 +120,7 @@ export default function Home() {
                   </div>
 
 
-                  <h1 className="text-center mb-2 font-semibold text-gray-800 text-title-sm dark:text-white/90 sm:text-title-md">
+                  <h1 className="text-center mb-2 font-semibold text-gray-3000 text-title-sm dark:text-white/90 sm:text-title-md">
                     Sign In
                   </h1>
                   <p className="text-center text-sm text-gray-500 dark:text-gray-400">
