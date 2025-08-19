@@ -1,5 +1,5 @@
 import { BookOutlined, BuildOutlined, CalendarOutlined, CarOutlined, CarTwoTone, DeleteOutlined, DownOutlined, EditOutlined, GroupOutlined, InsertRowBelowOutlined, InsertRowLeftOutlined, PlusCircleOutlined, PlusOutlined, SearchOutlined, ShopOutlined, ShoppingCartOutlined, ShopTwoTone, SnippetsOutlined, UserAddOutlined, UserDeleteOutlined, UsergroupAddOutlined, UserOutlined } from "@ant-design/icons";
-import { Button, Divider, Dropdown, Form, Input, InputNumber, Menu, Modal, Popconfirm, Select, Space, Spin, Table, Tag } from "antd";
+import { Button, Divider, Dropdown, Form, Input, InputNumber, Menu, Modal, Popconfirm, QRCode, Select, Space, Spin, Table, Tag } from "antd";
 import Cookies from "js-cookie";
 import Head from "next/head";
 import { useRouter } from "next/router";
@@ -37,6 +37,7 @@ export default function Home() {
     const [formEdit] = Form.useForm();
     const [section_id, set_section_id] = useState(null);
     const [collector_id, set_collector_id] = useState(null);
+    const [show_modal_qr, set_show_modal_qr] = useState(false);
     const handleCancelAdd = () => {
         setOpenAdd(false);
     }
@@ -208,6 +209,11 @@ export default function Home() {
         setShowModalEdit(false);
     }
 
+    const handleCloseModal_qr = () => {
+        set_show_modal_qr(false);
+        setCurrentRow(null);
+    }
+
     const chartData = {
 
         series: [
@@ -281,7 +287,12 @@ export default function Home() {
             dataIndex: 'stall_no',
             key: 'stall_no',
             render: (dom, entity) => {
-                return dom
+                return (
+                    <Button type="primary" onClick={(() => {
+                        setCurrentRow(entity)
+                        set_show_modal_qr(true)
+                    })}>{dom}</Button>
+                )
 
             }
         },
@@ -940,6 +951,40 @@ export default function Home() {
                     </Modal></> : ''
             }
 
+
+
+
+
+            {
+                show_modal_qr ?
+                    <>     <Modal
+                        title=""
+                        open={show_modal_qr}
+                        // confirmLoading={confirmLoadingAdd}
+                        onCancel={handleCloseModal_qr}
+
+                        // width={00}
+                        footer={[]}
+                    >
+                        <div clas>
+
+                            <QRCode
+                                errorLevel="H"
+                                value={CurrentRow?.stall_no}
+                                icon="/logo.jpg"
+
+                            />
+
+                            <h1>{CurrentRow?.stall_no}</h1>
+
+                            <h1>{CurrentRow?.occupant_name}</h1>
+
+
+
+                        </div>
+
+                    </Modal></> : ''
+            }
 
 
 

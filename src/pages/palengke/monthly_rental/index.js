@@ -13,7 +13,7 @@ import customParseFormat from 'dayjs/plugin/customParseFormat';
 import dynamic from "next/dynamic";
 import Link from "next/link";
 import { deleteArea, GetArea, postArea, putArea } from "../../api/area";
-import { GetOverAllDispenseCashTickets, GetOverAllDispenseCashTicketsPerCollector, GetOverAllDispenseCashTicketsPerName } from "../../api/reports";
+import { GetOverAllDispenseCashTickets, GetOverAllDispenseCashTicketsPerCollector, GetOverAllDispenseCashTicketsPerName, GetOverAllMonthlyPayment, GetOverAllMonthlyPaymentPerArea, GetOverAllMonthlyPaymentPerCollector } from "../../api/reports";
 
 // Dynamically import only on client
 const ReactApexChart = dynamic(() => import("react-apexcharts"), { ssr: false });
@@ -51,7 +51,7 @@ export default function Home() {
 
         try {
 
-            let ApiResponse = await GetOverAllDispenseCashTickets({
+            let ApiResponse = await GetOverAllMonthlyPayment({
                 from: from,
                 to: to
             })
@@ -117,8 +117,8 @@ export default function Home() {
 
         {
             title: 'Name',
-            dataIndex: 'name',
-            key: 'name',
+            dataIndex: 'area_name',
+            key: 'area_name',
             render: (dom, entity) => {
                 return dom
 
@@ -126,8 +126,8 @@ export default function Home() {
         },
 
         {
-            title: 'Total Dispense',
-            dataIndex: 'total_dispensed',
+            title: 'Total Monthly Payment',
+            dataIndex: 'total_monthly_payment',
             key: 'name',
             render: (dom, entity) => {
                 return `₱${dom}`
@@ -153,8 +153,8 @@ export default function Home() {
         },
 
         {
-            title: 'Total Dispense',
-            dataIndex: 'total_dispensed',
+            title: 'Total Monthly Payment',
+            dataIndex: 'total_monthly_payment',
             key: 'name',
             render: (dom, entity) => {
                 return `₱${dom}`
@@ -168,12 +168,12 @@ export default function Home() {
 
 
 
-    const handleGetOverAllDispenseCashTicketsPerCollector = async () => {
+    const handleGethandleGetOverAllMonthlyPAymenyPerCollector = async () => {
         Setisfetching(true)
 
         try {
 
-            let ApiResponse = await GetOverAllDispenseCashTicketsPerCollector({
+            let ApiResponse = await GetOverAllMonthlyPaymentPerCollector({
                 from: from,
                 to: to
             })
@@ -190,12 +190,12 @@ export default function Home() {
 
 
 
-    const handleGetOverAllDispenseCashTicketsPerName = async () => {
+    const handleGetOverAllMonthlyPAymenyPerArea = async () => {
         Setisfetching(true)
 
         try {
 
-            let ApiResponse = await GetOverAllDispenseCashTicketsPerName({
+            let ApiResponse = await GetOverAllMonthlyPaymentPerArea({
                 from: from,
                 to: to
             })
@@ -222,15 +222,15 @@ export default function Home() {
     useEffect(() => {
 
         handleGetData();
-        handleGetOverAllDispenseCashTicketsPerName()
-        handleGetOverAllDispenseCashTicketsPerCollector()
+        handleGetOverAllMonthlyPAymenyPerArea()
+        handleGethandleGetOverAllMonthlyPAymenyPerCollector()
 
     }, [from, to])
 
     useEffect(() => {
         handleGetData();
-        handleGetOverAllDispenseCashTicketsPerName()
-        handleGetOverAllDispenseCashTicketsPerCollector()
+        handleGetOverAllMonthlyPAymenyPerArea()
+        handleGethandleGetOverAllMonthlyPAymenyPerCollector()
     }, []);
 
 
@@ -251,7 +251,7 @@ export default function Home() {
                     <>
 
                         <div>
-                            <h1 className="text-center text-purple-600">Cash tickets monitoring</h1>
+                            <h1 className="text-center text-purple-600">Monthly rental monitoring</h1>
 
                             <div className="text-center">
                                 <Space><Button className="text-md"><CalendarOutlined />Date </Button> <DatePicker size={'large'} onChange={onChange} defaultValue={dayjs(from, 'YYYY-MM-DD')} /></Space>
@@ -266,8 +266,8 @@ export default function Home() {
 
 
                                 <div>
-                                    <p className="text-4xl font-bold text-purple-600">₱{data?.total_dispensed ?? 0}</p>
-                                    <p className="text-2xl font-bold text-purple-600">Overall dispense cash tickets</p>
+                                    <p className="text-4xl font-bold text-purple-600">₱{data?.total_monthly_payment ?? 0}</p>
+                                    <p className="text-2xl font-bold text-purple-600">Overall monthly rental</p>
                                     <h3>as of {from}</h3>
                                 </div>
                             </div>
@@ -280,7 +280,7 @@ export default function Home() {
                             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-4 mb-4">
 
                                 <div className="p-2 bg-white rounded-lg shadow mt-2">
-                                    <h3 className="text-xl text-purple-500">Per cash ticket</h3>
+                                    <h3 className="text-xl text-purple-500">Per Area/Building</h3>
                                     <Table dataSource={data_per_name} columns={columns_per_name} loading={isfetching} scroll={{
                                         x: 800,
                                     }} />
