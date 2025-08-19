@@ -29,7 +29,7 @@ export async function GetAreaAndSection(body) {
     const id = Cookies.get('id')
   
     const response =  await axios
-      .get(`${process.env.NEXT_PUBLIC_API_URL}/admin/OverAllDispenseCashTickets`,{
+      .get(`${process.env.NEXT_PUBLIC_API_URL}/admin/OverAllDispenseCashTickets?from=${body?.from}&to=${body?.to}`,{
         headers: {
           "Content-Type": "application/json",
           Authorization: `Bearer ${token}`,
@@ -46,7 +46,7 @@ export async function GetAreaAndSection(body) {
     const id = Cookies.get('id')
   
     const response =  await axios
-      .get(`${process.env.NEXT_PUBLIC_API_URL}/admin/OverAllDispenseCashTicketsPerName`,{
+      .get(`${process.env.NEXT_PUBLIC_API_URL}/admin/OverAllDispenseCashTicketsPerName?from=${body?.from}&to=${body?.to}`,{
         headers: {
           "Content-Type": "application/json",
           Authorization: `Bearer ${token}`,
@@ -63,7 +63,60 @@ export async function GetAreaAndSection(body) {
     const id = Cookies.get('id')
   
     const response =  await axios
-      .get(`${process.env.NEXT_PUBLIC_API_URL}/admin/OverAllDispenseCashTicketsPerCollector`,{
+      .get(`${process.env.NEXT_PUBLIC_API_URL}/admin/OverAllDispenseCashTicketsPerCollector?from=${body?.from}&to=${body?.to}`,{
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+      })
+
+
+      return response
+    
+  }
+
+
+  export async function GetOverAllMonthlyPayment(body) {
+    const token = Cookies.get('accessToken')
+    const id = Cookies.get('id')
+  
+    const response =  await axios
+      .get(`${process.env.NEXT_PUBLIC_API_URL}/admin/OverAllMonthlyPayment?from=${body?.from}&to=${body?.to}`,{
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+      })
+
+
+      return response
+    
+  }
+
+
+  export async function GetOverAllMonthlyPaymentPerArea(body) {
+    const token = Cookies.get('accessToken')
+    const id = Cookies.get('id')
+  
+    const response =  await axios
+      .get(`${process.env.NEXT_PUBLIC_API_URL}/admin/OverAllMonthlyPaymentPerArea?from=${body?.from}&to=${body?.to}`,{
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+      })
+
+
+      return response
+    
+  }
+
+  export async function GetOverAllMonthlyPaymentPerCollector(body) {
+    const token = Cookies.get('accessToken')
+    const id = Cookies.get('id')
+  
+    const response =  await axios
+      .get(`${process.env.NEXT_PUBLIC_API_URL}/admin/OverAllMonthlyPaymentPerCollector?from=${body?.from}&to=${body?.to}`,{
         headers: {
           "Content-Type": "application/json",
           Authorization: `Bearer ${token}`,
