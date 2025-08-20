@@ -1,5 +1,5 @@
 import { BookOutlined, BuildOutlined, CalendarOutlined, CarOutlined, CarTwoTone, DeleteOutlined, DownOutlined, EditOutlined, GroupOutlined, InsertRowBelowOutlined, InsertRowLeftOutlined, PlusCircleOutlined, PlusOutlined, SearchOutlined, ShopOutlined, ShoppingCartOutlined, ShopTwoTone, SnippetsOutlined, UserAddOutlined, UserDeleteOutlined, UsergroupAddOutlined, UserOutlined } from "@ant-design/icons";
-import { Button, Divider, Dropdown, Form, Input, InputNumber, Menu, Modal, Popconfirm, QRCode, Select, Space, Spin, Table, Tag } from "antd";
+import { Button, Divider, Dropdown, Form, Input, InputNumber, Menu, Modal, Popconfirm, Select, Space, Spin, Table, Tag } from "antd";
 import Cookies from "js-cookie";
 import Head from "next/head";
 import { useRouter } from "next/router";
@@ -17,7 +17,7 @@ import { deleteSection, GetSection, postSection, putSection } from "../../api/se
 import { GetAreaAndSection } from "../../api/reports";
 import { deleteOccupant, GetOccupant, postOccupant, putOccupant } from "../../api/occupant";
 import { GetCollector } from "../../api/collector";
-
+import QRCode from "react-qr-code";
 // Dynamically import only on client
 const ReactApexChart = dynamic(() => import("react-apexcharts"), { ssr: false });
 
@@ -968,12 +968,16 @@ export default function Home() {
                     >
                         <div clas>
 
-                            <QRCode
+                            {/* <QRCode
                                 errorLevel="H"
                                 value={CurrentRow?.stall_no}
                                 icon="/logo.jpg"
 
-                            />
+                            /> */}
+
+
+                            <QRCode value={CurrentRow?.stall_no} size={200} level="H" includeMargin={true} />
+
 
                             <h1>{CurrentRow?.stall_no}</h1>
 
