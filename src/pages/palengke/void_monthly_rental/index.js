@@ -13,6 +13,7 @@ import customParseFormat from 'dayjs/plugin/customParseFormat';
 import dynamic from "next/dynamic";
 import Link from "next/link";
 import { deleteArea, GetArea, postArea, putArea } from "../../api/area";
+import { GetVoid_monthly_rental, VoidMonthlyPayment } from "../../api/void_monthly_payment";
 
 // Dynamically import only on client
 const ReactApexChart = dynamic(() => import("react-apexcharts"), { ssr: false });
@@ -45,7 +46,7 @@ export default function Home() {
 
         try {
 
-            let ApiResponse = await GetArea()
+            let ApiResponse = await GetVoid_monthly_rental()
 
             setData(ApiResponse?.data?.data)
             // settotalTransaction(ApiResponse?.data?.data[4][0]);
@@ -63,14 +64,17 @@ export default function Home() {
     const onFinish = async (values) => {
         try {
 
-            let ApiResponse = await postArea({ ...values })
-            Setisfetching(true)
-            toast.success('Area saved!', {
-                position: "top-center",
-            })
-            handleGetData();
-            form.resetFields();
-            setOpenAdd(false);
+
+            let ApiResponse = await GetVoid_monthly_rental({ ...values })
+
+            if (ApiResponse?.data?.data?.length == 0) {
+
+                toast.error('No Record Found', {
+                    position: "top-center",
+                })
+            }
+
+            setData(ApiResponse?.data?.data)
         }
         catch (error) {
 
@@ -89,36 +93,6 @@ export default function Home() {
     };
     const onFinishFailedEdit = (errorInfo) => {
         console.log('Failed:', errorInfo);
-    };
-
-
-    //DELETE
-    const handleDelete = async (record) => {
-        try {
-
-            let ApiResponse = await deleteArea(record?.id)
-            toast.success('Record deleted!', {
-                position: "top-center",
-            })
-            handleGetData();
-        }
-        catch (error) {
-            if (error?.response?.status == 401) {
-                toast.error('UnAuthenticated.', {
-                    position: "top-center",
-                })
-                Cookies.remove('accessToken');
-                setTimeout(() => {
-                    router.push('/')
-                }, 2000);
-            } else {
-                toast.error('Operation error.', {
-                    position: "top-center",
-                })
-            }
-            console.log('Get Coordinator Error: ', error?.response);
-
-        }
     };
 
 
@@ -211,11 +185,42 @@ export default function Home() {
     const columns = [
 
         {
-            title: 'Area  Name',
-            dataIndex: 'name',
-            key: 'name',
+            title: 'Stall number',
+            dataIndex: 'stall_no',
+            key: 'stall_no',
+            width: 150,
             render: (dom, entity) => {
                 return dom
+
+            }
+        },
+        {
+            title: 'OR number',
+            dataIndex: 'or_number',
+            key: 'or_number',
+            width: 150,
+            render: (dom, entity) => {
+                return dom
+
+            }
+        },
+        {
+            title: 'Paid for month of',
+            dataIndex: 'paid_date',
+            key: 'paid_date',
+            width: 200,
+            render: (dom, entity) => {
+                return dom
+
+            }
+        },
+        {
+            title: 'Is voided?',
+            dataIndex: 'is_void',
+            key: 'is_void',
+            width: 200,
+            render: (dom, entity) => {
+                return dom == 0 ? <Tag color="green">No</Tag> : <Tag color="red">Yes</Tag>
 
             }
         },
@@ -224,14 +229,51 @@ export default function Home() {
             dataIndex: 'name',
             valueType: 'option',
             fixed: 'right',
-            width: 180,
+
             render: (_, record) => (
-              <></>
+     
+              
+                    <Button danger onClick={(()=>{
+
+                        confirmVoid(record.id)
+                    })}>Void</Button>
+         
             )
         },
 
 
     ];
+
+
+    const confirmVoid = async (id) => {
+        try {
+            let ApiResponse = await VoidMonthlyPayment({
+                is_void:1, id:id
+            })
+            toast.success('Payment voided.', {
+                position: "top-center",
+            })
+
+        }
+        catch (error) {
+            if (error?.response?.status == 401) {
+
+                toast.error('UnAuthenticated.', {
+                    position: "top-center",
+                })
+                Cookies.remove('accessToken');
+                setTimeout(() => {
+                    router.push('/')
+                }, 2000);
+            } else {
+                toast.error('Operation error.', {
+                    position: "top-center",
+                })
+            }
+            console.log('Get Coordinator Error: ', error?.response);
+
+        } 
+    }
 
 
     //ACTIONS TABLE
@@ -266,10 +308,6 @@ export default function Home() {
 
 
 
-    useEffect(() => {
-        handleGetData();
-    }, []);
-
     return (
 
 
@@ -290,72 +328,72 @@ export default function Home() {
                             <h1 className="text-center text-purple-600">Void Monthly Payment</h1>
 
 
-<div className="mt-10">
-    
-<Form
-                    form={form}
-                    name="basic"
-                    labelCol={{
-                        span: 6,
-                    }}
-                    wrapperCol={{
-                        span: 24,
-                    }}
-                    // style={{
-                    //     maxWidth: 400,
-                    // }}
-                    initialValues={{
-                        remember: true,
-                    }}
-                    onFinish={onFinish}
-                    onFinishFailed={onFinishFailed}
-                    autoComplete="off"
-                >
+                            <div className="mt-10">
 
-                    <Form.Item
-                        label=""
-                        name="stall_no"
+                                <Form
+                                    form={form}
+                                    name="basic"
+                                    labelCol={{
+                                        span: 6,
+                                    }}
+                                    wrapperCol={{
+                                        span: 24,
+                                    }}
+                                    // style={{
+                                    //     maxWidth: 400,
+                                    // }}
+                                    initialValues={{
+                                        remember: true,
+                                    }}
+                                    onFinish={onFinish}
+                                    onFinishFailed={onFinishFailed}
+                                    autoComplete="off"
+                                >
 
-                        rules={[
-                            {
-                                required: true,
-                                message: 'Field required',
-                            },
-                        ]}
-                    >
-                        <Input placeholder="Stall number" onInput={e => e.target.value = e.target.value.toUpperCase()} />
+                                    <Form.Item
+                                        label=""
+                                        name="stall_no"
 
-                    </Form.Item>
+                                        rules={[
+                                            {
+                                                required: true,
+                                                message: 'Field required',
+                                            },
+                                        ]}
+                                    >
+                                        <Input placeholder="Stall number" onInput={e => e.target.value = e.target.value.toUpperCase()} />
 
-                    <Form.Item
-                        label=""
-                        name="or_number"
+                                    </Form.Item>
 
-                        rules={[
-                            {
-                                required: true,
-                                message: 'Field required',
-                            },
-                        ]}
-                    >
-                        <Input placeholder="OR number" onInput={e => e.target.value = e.target.value.toUpperCase()} />
+                                    <Form.Item
+                                        label=""
+                                        name="or_number"
 
-                    </Form.Item>
+                                        rules={[
+                                            {
+                                                required: true,
+                                                message: 'Field required',
+                                            },
+                                        ]}
+                                    >
+                                        <Input placeholder="OR number" onInput={e => e.target.value = e.target.value.toUpperCase()} />
 
-                    <Form.Item
-                        wrapperCol={{
-                            span: 24,
-                        }}
+                                    </Form.Item>
 
-                    >
-                        <Button style={{
-                            width: '100%',
-                        }} type="primary" htmlType="submit">
-                            Search
-                        </Button>
-                    </Form.Item>
-                </Form>
-</div>
+                                    <Form.Item
+                                        wrapperCol={{
+                                            span: 24,
+                                        }}
+
+                                    >
+                                        <Button style={{
+                                            width: '100%',
+                                        }} type="primary" htmlType="submit">
+                                            Search
+                                        </Button>
+                                    </Form.Item>
+                                </Form>
+                            </div>
 
 
 
@@ -375,7 +413,7 @@ export default function Home() {
 
 
 
-   
+
 
 
 

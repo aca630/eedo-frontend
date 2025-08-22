@@ -13,7 +13,7 @@ import customParseFormat from 'dayjs/plugin/customParseFormat';
 import dynamic from "next/dynamic";
 import Link from "next/link";
 import { deleteArea, GetArea, postArea, putArea } from "../../api/area";
-import { deleteCollector, GetCollector, postCollector } from "../../api/collector";
+import { deleteCollector, GetCollector, postCollector, putCollector } from "../../api/collector";
 
 
 // Dynamically import only on client
@@ -127,7 +127,7 @@ export default function Home() {
     //EDIT
     const onFinishEdit = async (values) => {
         try {
-            let ApiResponse = await putArea({
+            let ApiResponse = await putCollector({
                 ...values, id: CurrentRow?.id
             })
             toast.success('Record updated.', {
@@ -279,7 +279,7 @@ export default function Home() {
             label: `Edit`,
             onClick: async (record) => {
                 formEdit.setFieldsValue({
-                    name: record.name,
+                    full_name: record.full_name,
                 })
                 setCurrentRow(record)
                 setShowModalEdit(true)
@@ -473,7 +473,7 @@ export default function Home() {
 
                             <Form.Item
                                 label="Collector Name"
-                                name="name"
+                                name="full_name"
                                 rules={[
                                     {
                                         required: true,
@@ -483,7 +483,7 @@ export default function Home() {
                             >
                                 <Input size='large' style={{
                                     width: '100%',
-                                }} defaultValue={CurrentRow && CurrentRow?.name} />
+                                }} defaultValue={CurrentRow && CurrentRow?.full_name} />
                             </Form.Item>
 
 
