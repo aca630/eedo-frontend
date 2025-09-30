@@ -143,7 +143,7 @@ export default function Home() {
 
                 </Link>
 
-                <Link href="/dashboard/palengke">
+                <Link href="/slaughter">
 
                   <div className="bg-white p-6 rounded-lg shadow flex items-center space-x-4">
 
