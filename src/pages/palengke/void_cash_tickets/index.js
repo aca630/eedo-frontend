@@ -135,7 +135,6 @@ export default function Home() {
             })
             formEdit.resetFields();
             setShowModalEdit(false);
-            handleGetData();
         }
         catch (error) {
             if (error?.response?.status == 401) {
@@ -338,11 +337,7 @@ export default function Home() {
         handleGetCollector();
     }, [])
 
-    useEffect(() => {
-        if (collector_id) {
-            handleGetData();
-        }
-    }, [collector_id])
+
 
     return (
 
@@ -355,9 +350,7 @@ export default function Home() {
                 <link rel="icon" href="/favicon.ico" />
             </Head>
 
-            {
-
-                !isfetching ?
+        
                     <>
 
                         <div>
@@ -366,17 +359,7 @@ export default function Home() {
 
                             <div className="mt-10">
 
-
-                                <Form.Item
-                                    label="Collector"
-                                    name="collector_id"
-                                    rules={[
-                                        {
-                                            required: true,
-                                            message: 'Field required',
-                                        },
-                                    ]}
-                                >
+                                <Space.Compact style={{ width: '100%' }}>
                                     <Select showSearch size='large' name="collector_id" onChange={(e) => {
                                         set_collector_id(collectorData?.filter((item) => {
                                             if (e == item?.id) {
@@ -384,7 +367,7 @@ export default function Home() {
                                             }
                                         })?.[0]?.id)
                                     }} style={{
-                                        width: '100%',
+                                        width: '90%',
                                     }} >
                                         {
                                             collectorData?.map((item, key) => {
@@ -395,7 +378,10 @@ export default function Home() {
                                             })
                                         }
                                     </Select>
-                                </Form.Item>
+                                    <Button style={{
+                                        width: '10%',
+                                    }} type="primary" onClick={handleGetData}>Search</Button>
+                                </Space.Compact>
 
 
                             </div>
@@ -406,14 +392,12 @@ export default function Home() {
                                 x: 800,
                             }} />
 
+
                         </div>
 
 
                     </>
-                    : <div className="h-screen text-center noPrint">
-                        <Spin size="large" tip='Generating...' className="mt-20" />
-                    </div>
-            }
+                  
 
 
 
