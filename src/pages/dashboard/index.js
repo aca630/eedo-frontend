@@ -118,7 +118,7 @@ export default function Home() {
 
 
                     <div>
-                      <p className="text-2xl font-bold text-purple-600">Palengkessss</p>
+                      <p className="text-2xl font-bold text-purple-600">Palengke</p>
 
                     </div>
                   </div>

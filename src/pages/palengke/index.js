@@ -244,28 +244,55 @@ export default function Home() {
                                 </Link>
 
 
-                                <Link href="/palengke/void_monthly_rental">
-
-<div className="bg-white p-6 rounded-lg shadow flex items-center space-x-4">
-
-    <div className="flex items-center justify-center w-12 h-12 bg-gray-300 rounded-xl dark:bg-gray-800">
-
-        <ExclamationCircleOutlined className=" text-4xl text-purple-600" />
-    </div>
 
 
-    <div>
-        <p className="text-xl font-bold text-purple-600">Void Monthly Payment</p>
-
-    </div>
-</div>
-
-</Link>
 
 
 
                             </div>
 
+                            <Divider>
+
+                            </Divider>
+
+
+                            <div className="grid grid-cols-2 gap-4 ">
+                                    <Link href="/palengke/void_monthly_rental">
+
+                                        <div className="bg-white p-6 rounded-lg shadow flex items-center space-x-4">
+
+                                            <div className="flex items-center justify-center w-12 h-12 bg-gray-300 rounded-xl dark:bg-gray-800">
+
+                                                <ExclamationCircleOutlined className=" text-4xl text-red-600" />
+                                            </div>
+
+
+                                            <div>
+                                                <p className="text-xl font-bold text-red-600">Void Monthly Payment</p>
+
+                                            </div>
+                                        </div>
+
+                                    </Link>
+
+                                    <Link href="/palengke/void_cash_tickets">
+
+                                        <div className="bg-white p-6 rounded-lg shadow flex items-center space-x-4">
+
+                                            <div className="flex items-center justify-center w-12 h-12 bg-gray-300 rounded-xl dark:bg-gray-800">
+
+                                                <ExclamationCircleOutlined className=" text-4xl text-red-600" />
+                                            </div>
+
+
+                                            <div>
+                                                <p className="text-xl font-bold text-red-600">Void Cash Ticket</p>
+
+                                            </div>
+                                        </div>
+
+                                    </Link>
+                                </div>
                         </main>
                         {/* <div className="mt-20">
                             <ReactApexChart
@@ -289,7 +316,7 @@ export default function Home() {
 
 
             <ToastContainer />
-        </Layout>
+        </Layout >
 
 
     )
