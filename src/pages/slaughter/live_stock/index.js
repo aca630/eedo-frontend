@@ -75,7 +75,7 @@ export default function Home() {
         }
         catch (error) {
 
-            toast.error('Saving Livestock Failed!', {
+            toast.error('Saving Livestock charges Failed!', {
                 position: "top-center",
             })
 
@@ -95,69 +95,58 @@ export default function Home() {
 
     //DELETE
     const handleDelete = async (record) => {
-        try {
-
-            let ApiResponse = await deleteLivestock(record?.id)
-            toast.success('Record deleted!', {
-                position: "top-center",
-            })
-            handleGetData();
+    try {
+        await deleteLivestock(record?.id);
+        toast.success('Record deleted!', {
+        position: "top-center",
+        });
+        handleGetData(); // refresh table
+    } catch (error) {
+        if (error?.response?.status === 401) {
+        toast.error('UnAuthenticated.', { position: "top-center" });
+        Cookies.remove('accessToken');
+        setTimeout(() => {
+            router.push('/');
+        }, 2000);
+        } else {
+        toast.error('Delete failed!', {
+            position: "top-center",
+        });
         }
-        catch (error) {
-            if (error?.response?.status == 401) {
-                toast.error('UnAuthenticated.', {
-                    position: "top-center",
-                })
-                Cookies.remove('accessToken');
-                setTimeout(() => {
-                    router.push('/')
-                }, 2000);
-            } else {
-                toast.error('Operation error.', {
-                    position: "top-center",
-                })
-            }
-            console.log('Get Coordinator Error: ', error?.response);
-
-        }
+        console.log('Delete Error: ', error?.response);
+    }
     };
+
+<Menu.Item key="delete">
+  <Popconfirm
+    title="Are you sure to delete this record?"
+    okText="Yes"
+    cancelText="No"
+    onConfirm={() => handleDelete(record)}
+  >
+    <a>Delete</a>
+  </Popconfirm>
+</Menu.Item>
+
 
 
     //EDIT
     const onFinishEdit = async (values) => {
-        try {
-            let ApiResponse = await putLivestock({
-                ...values, id: CurrentRow?.id
-            })
-            toast.success('Record updated.', {
-                position: "top-center",
-            })
-            formEdit.resetFields();
-            setShowModalEdit(false);
-            handleGetData();
-        }
-        catch (error) {
-            if (error?.response?.status == 401) {
-
-                toast.error('UnAuthenticated.', {
-                    position: "top-center",
-                })
-                Cookies.remove('accessToken');
-                setTimeout(() => {
-                    router.push('/')
-                }, 2000);
-            } else {
-                toast.error('Operation error.', {
-                    position: "top-center",
-                })
-            }
-            console.log('Get Coordinator Error: ', error?.response);
-
-        }
-
-
-
+    try {
+        await putLivestock({
+        ...values,
+        id: CurrentRow?.id,
+        });
+        toast.success('Record updated.', { position: "top-center" });
+        formEdit.resetFields();
+        setShowModalEdit(false);
+        handleGetData(); // refresh table
+    } catch (error) {
+        toast.error('Update failed!', { position: "top-center" });
+        console.log('Update Error:', error?.response);
+    }
     };
+
 
     const handleCloseModalEdit = () => {
         setShowModalEdit(false);
@@ -209,56 +198,77 @@ export default function Home() {
     };
 
 
-    const columns = [
+const columns = [
+{
+  title: '#',
+  key: 'index',
+  render: (text, record, index) => `${index + 1}.`,
+},
+  {
+    title: 'Livestock Type',
+    dataIndex: 'livestock_id',
+    key: 'livestock_id',
+    render: (id) => {
+      if (id === 1) return "Small Cattle";
+      if (id === 2) return "Large Cattle";
+      if (id === 3) return "Goat";
+      return "Unknown"; // fallback
+    }
+  },
+  {
+    title: 'Corral Fee (CF)',
+    dataIndex: 'cf',
+    key: 'cf',
+  },
+  {
+    title: 'Slaughter Fee (SF)',
+    dataIndex: 'sf',
+    key: 'sf',
+  },
+  {
+    title: 'Slaughter Permit Fee (SPF)',
+    dataIndex: 'spf',
+    key: 'spf',
+  },
+  {
+    title: 'Post Mortem Fee (PMF)',
+    dataIndex: 'pmf',
+    key: 'pmf',
+  },
+  {
+    title: 'Actions',
+    key: 'actions',
+    render: (_, record) => (
+      <Dropdown.Button
+        overlay={
+          <Menu>
+            {items.map((item) => {
+              return (
+                <Menu.Item key={item.key}>
+                  {item.popconfirmTitle ? (
+                    <Popconfirm
+                      title={item.popconfirmTitle}
+                      onConfirm={() => handleDelete(record)}
+                      okText={`Yes`}
+                      cancelText={`No`}
+                    >
+                      <a>{item.label}</a>
+                    </Popconfirm>
+                  ) : (
+                    <a onClick={() => item.onClick(record)}>{item.label}</a>
+                  )}
+                </Menu.Item>
+              );
+            })}
+          </Menu>
+        }
+      >
+        Actions
+      </Dropdown.Button>
+    ),
+  },
+];
 
-        {
-            title: 'Livestock  Type',
-            dataIndex: 'name',
-            key: 'name',
-            render: (dom, entity) => {
-                return dom
-
-            }
-        },
-        {
-            title: `Actions`,
-            dataIndex: 'name',
-            valueType: 'option',
-            fixed: 'right',
-            width: 180,
-            render: (_, record) => (
-                <Dropdown.Button
-                    overlay={
-                        <Menu>
-                            {items.map((item) => {
-                                return (
-                                    <Menu.Item key={item.key}>
-                                        {item.popconfirmTitle ? (
-                                            <Popconfirm
-                                                title={item.popconfirmTitle}
-                                                onConfirm={() => handleDelete(record)}
-                                                okText={`Yes`}
-                                                cancelText={`No`}
-                                            >
-                                                <a>{item.label}</a>
-                                            </Popconfirm>
-                                        ) : (
-                                            <a onClick={() => item.onClick(record)}>{item.label}</a>
-                                        )}
-                                    </Menu.Item>
-                                );
-                            })}
-                        </Menu>
-
-                    }
-                >
-                    Actions
-                </Dropdown.Button>
-            )
-        },
-
-
-    ];
 
 
     //ACTIONS TABLE
@@ -269,24 +279,26 @@ export default function Home() {
             label: `Edit`,
             onClick: async (record) => {
                 formEdit.setFieldsValue({
-                    name: record.name,
-                })
-                setCurrentRow(record)
-                setShowModalEdit(true)
+                livestock_id: record.livestock_id,
+                cf: record.cf,
+                sf: record.sf,
+                spf: record.spf,
+                pmf: record.pmf,
+                });
+                setCurrentRow(record);
+                setShowModalEdit(true);
             },
-
             visible: true,
         },
 
         {
-            key: 'delete',
-            label: `Delete`,
-            onClick: (record) => {
-                // handleRemove(record.id);
-                actionRef.current?.reloadAndRest?.();
-            },
-            visible: true,
-            popconfirmTitle: `Are you sure?`,
+        key: 'delete',
+        label: `Delete`,
+        popconfirmTitle: `Are you sure you want to delete this record?`,
+        onClick: (record) => {
+            handleDelete(record); // call delete function
+        },
+        visible: true,
         },
 
     ];
@@ -383,9 +395,20 @@ export default function Home() {
                     <Input type="number" min={0} />
                 </Form.Item>
 
-                <Form.Item label="Post Mortem Fee (PMF)" name="pmf" rules={[{ required: true }]}>
-                    <Input type="number" min={0} />
+                <Form.Item 
+                    label="Post Mortem Fee (PMF)" 
+                    name="pmf" 
+                    rules={[{ required: true, message: 'Please select PMF!' }]}
+                >
+                    <Select placeholder="Select PMF Amount">
+                        {[50,100,150,200,250,300,350,400,450,500].map((amount) => (
+                            <Select.Option key={amount} value={amount}>
+                                {amount}
+                            </Select.Option>
+                        ))}
+                    </Select>
                 </Form.Item>
+
 
                 <Form.Item>
                     <Button type="primary" htmlType="submit">Submit</Button>
@@ -403,70 +426,61 @@ export default function Home() {
 
             {
                 showModalEdit ?
-                    <>     <Modal
-                        title="Edit Entry"
-                        open={showModalEdit}
-                        // confirmLoading={confirmLoadingAdd}
-                        onCancel={handleCloseModalEdit}
+                    <>     
+                    <Modal
+  title="Edit Livestock Charges"
+  open={showModalEdit}
+  onCancel={handleCloseModalEdit}
+  width={800}
+  footer={[]}
+>
+  <Form
+    form={formEdit}
+    layout="vertical"
+    onFinish={onFinishEdit}
+  >
+    <Form.Item
+      label="Type of Livestock"
+      name="livestock_id"
+      rules={[{ required: true, message: 'Please select livestock type!' }]}
+    >
+      <Select placeholder="Select Type">
+        <Select.Option value={1}>Small Cattle</Select.Option>
+        <Select.Option value={2}>Large Cattle</Select.Option>
+      </Select>
+    </Form.Item>
 
-                        width={800}
-                        footer={[]}
-                    >
+    <Form.Item label="Corral Fee (CF)" name="cf" rules={[{ required: true }]}>
+      <Input type="number" min={0} />
+    </Form.Item>
 
+    <Form.Item label="Slaughter Fee (SF)" name="sf" rules={[{ required: true }]}>
+      <Input type="number" min={0} />
+    </Form.Item>
 
-                        <Form
-                            form={formEdit}
-                            name="basic"
-                            labelCol={{
-                                span: 6,
-                            }}
-                            wrapperCol={{
-                                span: 18,
-                            }}
-                            initialValues={{
-                                remember: true,
-                            }}
-                            onFinish={onFinishEdit}
-                            onFinishFailed={onFinishFailedEdit}
-                            autoComplete="off"
-                        >
+    <Form.Item label="Slaughter Permit Fee (SPF)" name="spf" rules={[{ required: true }]}>
+      <Input type="number" min={0} />
+    </Form.Item>
 
+    <Form.Item label="Post Mortem Fee (PMF)" name="pmf" rules={[{ required: true }]}>
+      <Select placeholder="Select PMF Amount">
+        {[50,100,150,200,250,300,350,400,450,500].map((amount) => (
+          <Select.Option key={amount} value={amount}>
+            {amount}
+          </Select.Option>
+        ))}
+      </Select>
+    </Form.Item>
 
-                            <Form.Item
-                                label="Livestock Type Name"
-                                name="name"
-                                rules={[
-                                    {
-                                        required: true,
-                                        message: 'name required!',
-                                    },
-                                ]}
-                            >
-                                <Input size='large' style={{
-                                    width: '100%',
-                                }} defaultValue={CurrentRow && CurrentRow?.name} />
-                            </Form.Item>
-
-
-
-                            <Divider />
-                            <Form.Item
-                                wrapperCol={{
-                                    span: 24,
-                                }}
-
-                            >
-                                <Button type="primary" style={{
-                                    width: '100%',
-                                }} size='large' htmlType="submit">
-                                    Update
-                                </Button>
-                            </Form.Item>
-                        </Form>
-
-
-
-                    </Modal></> : ''
+    <Divider />
+    <Form.Item>
+      <Button type="primary" style={{ width: '100%' }} size='large' htmlType="submit">
+        Update
+      </Button>
+    </Form.Item>
+  </Form>
+</Modal>
+</> : ''
             }
 
 
