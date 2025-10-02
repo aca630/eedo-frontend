@@ -9,7 +9,7 @@ export async function GetLivestock(body) {
     const token = Cookies.get('accessToken')
   
     const response =  await axios
-      .get(`${process.env.NEXT_PUBLIC_API_URL}/admin/livestock`,{
+      .get(`${process.env.NEXT_PUBLIC_API_URL}/admin/livestockcharges`,{
         headers: {
           "Content-Type": "application/json",
           Authorization: `Bearer ${token}`,
@@ -28,7 +28,7 @@ export async function postLivestock(body) {
     const token = Cookies.get('accessToken')
   
     const response =  await axios
-      .post(`${process.env.NEXT_PUBLIC_API_URL}/admin/livestock`, body, {
+      .post(`${process.env.NEXT_PUBLIC_API_URL}/admin/livestockcharges`, body, {
         headers: {
           "Content-Type": "application/json",
           Authorization: `Bearer ${token}`,
@@ -48,7 +48,7 @@ export async function deleteLivestock(id) {
     const token = Cookies.get('accessToken')
   
     const response =  await axios
-      .delete(`${process.env.NEXT_PUBLIC_API_URL}/admin/livestock/${id}`, {
+      .delete(`${process.env.NEXT_PUBLIC_API_URL}/admin/livestockcharges/${id}`, {
         headers: {
           "Content-Type": "application/json",
           Authorization: `Bearer ${token}`,
@@ -66,7 +66,7 @@ export async function deleteLivestock(id) {
     const token = Cookies.get('accessToken')
   
     const response =  await axios
-      .put(`${process.env.NEXT_PUBLIC_API_URL}/admin/livestock/${body?.id}`, body, {
+      .put(`${process.env.NEXT_PUBLIC_API_URL}/admin/livestockcharges/${body?.id}`, body, {
         headers: {
           "Content-Type": "application/json",
           Authorization: `Bearer ${token}`,
