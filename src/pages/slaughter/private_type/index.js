@@ -405,6 +405,7 @@ const onFinishEdit = async (values) => {
                     {
                         title: '#',
                         render: (_, __, index) => `${index + 1}.`,
+                        align: 'right',
                     },
                     {
                         title: 'Date',
