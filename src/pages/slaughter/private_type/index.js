@@ -57,23 +57,6 @@ export default function Home() {
     };
 
 
-        // 👉 New: kunin ang Livestock list galing backend (yung index() ng LivestockController)
-    const handleGetLivestockOptions = async () => {
-        try {
-            const token = Cookies.get("accessToken");
-            const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/admin/livestock`, {
-                headers: {
-                    "Content-Type": "application/json",
-                    "Authorization": `Bearer ${token}`,
-                },
-            });
-            const result = await res.json();
-            setLivestockOptions(result.data || []); // set state
-        } catch (error) {
-            console.log("Error fetching livestock options:", error);
-        }
-    };
-
 
 //ang function na to ay para kunin ang data sa database table na livestock
     const handleGetData = async () => {
@@ -292,7 +275,6 @@ const onFinishEdit = async (values) => {
 
     useEffect(() => {
         handleGetData();
-        handleGetLivestockOptions();  // 👉 add this
     }, []);
 
     return (
