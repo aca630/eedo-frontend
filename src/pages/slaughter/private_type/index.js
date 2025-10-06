@@ -130,71 +130,31 @@ export default function Home() {
     };
 
 
-    //DELETE
-    const handleDelete = async (record) => {
-        try {
+// DELETE
+const handleDelete = async (record) => {
+  try {
+    await deleteSLPrivate(record?.id);
+    toast.success('Record deleted!', { position: "top-center" });
+    handleGetData();
+  } catch (error) {
+    toast.error('Delete failed.', { position: "top-center" });
+    console.log(error);
+  }
+};
 
-            let ApiResponse = await deleteLivestock(record?.id)
-            toast.success('Record deleted!', {
-                position: "top-center",
-            })
-            handleGetData();
-        }
-        catch (error) {
-            if (error?.response?.status == 401) {
-                toast.error('UnAuthenticated.', {
-                    position: "top-center",
-                })
-                Cookies.remove('accessToken');
-                setTimeout(() => {
-                    router.push('/')
-                }, 2000);
-            } else {
-                toast.error('Operation error.', {
-                    position: "top-center",
-                })
-            }
-            console.log('Get Coordinator Error: ', error?.response);
-
-        }
-    };
-
-
-    //EDIT
-    const onFinishEdit = async (values) => {
-        try {
-            let ApiResponse = await putLivestock({
-                ...values, id: CurrentRow?.id
-            })
-            toast.success('Record updated.', {
-                position: "top-center",
-            })
-            formEdit.resetFields();
-            setShowModalEdit(false);
-            handleGetData();
-        }
-        catch (error) {
-            if (error?.response?.status == 401) {
-
-                toast.error('UnAuthenticated.', {
-                    position: "top-center",
-                })
-                Cookies.remove('accessToken');
-                setTimeout(() => {
-                    router.push('/')
-                }, 2000);
-            } else {
-                toast.error('Operation error.', {
-                    position: "top-center",
-                })
-            }
-            console.log('Get Coordinator Error: ', error?.response);
-
-        }
-
-
-
-    };
+// EDIT
+const onFinishEdit = async (values) => {
+  try {
+    await putSLPrivate({ ...values, id: CurrentRow?.id });
+    toast.success('Record updated!', { position: "top-center" });
+    formEdit.resetFields();
+    setShowModalEdit(false);
+    handleGetData();
+  } catch (error) {
+    toast.error('Update failed.', { position: "top-center" });
+    console.log(error);
+  }
+};
 
     const handleCloseModalEdit = () => {
         setShowModalEdit(false);
@@ -357,85 +317,166 @@ export default function Home() {
 
                         </div>
 
-<Row justify="center" className="py-8">
-  <Col xs={24} sm={18} md={12} lg={12} xl={10}>
-    <Card title="Inputs" bordered={false} className="shadow">
-      <Form
-        form={form}
-        name="slaughterForm"
-        labelCol={{ span: 8 }}  // mas tight spacing ng labels
-        wrapperCol={{ span: 16 }}
-        onFinish={onFinish}
-        onFinishFailed={onFinishFailed}
-        autoComplete="off"
-      >
-<Form.Item
-  label="Date"
-  name="date"
-  initialValue={moment().format("YYYY-MM-DD")} // ✅ recommended
-  rules={[{ required: true, message: 'Please select date!' }]}
->
-  <Input type="date" size="large" />
-</Form.Item>
+            <Row gutter={16} className="py-8">
+            <Col xs={24} lg={8}>
+                <Card title="Inputs" bordered={false} className="shadow">
+                <Form
+                    form={form}
+                    name="slaughterForm"
+                    labelCol={{ span: 8 }}  // mas tight spacing ng labels
+                    wrapperCol={{ span: 16 }}
+                    onFinish={onFinish}
+                    onFinishFailed={onFinishFailed}
+                    autoComplete="off"
+                >
+                <Form.Item
+                label="Date"
+                name="date"
+                initialValue={moment().format("YYYY-MM-DD")} // ✅ recommended
+                rules={[{ required: true, message: 'Please select date!' }]}
+                >
+                <Input type="date" size="large" />
+                </Form.Item>
 
-        {/* OR */}
-        <Form.Item
-          label="OR #"
-          name="or_no"
-          rules={[{ required: true, message: 'Please enter OR number!' }]}
-        >
-          <Input placeholder="Enter OR Number" size="large" />
-        </Form.Item>
+                    {/* OR */}
+                    <Form.Item
+                    label="OR #"
+                    name="or_no"
+                    rules={[{ required: true, message: 'Please enter OR number!' }]}
+                    >
+                    <Input placeholder="Enter OR Number" size="large" />
+                    </Form.Item>
 
-        {/* Agency */}
-        <Form.Item
-          label="Agency"
-          name="agency"
-          rules={[{ required: true, message: 'Please enter Agency!' }]}
-        >
-          <Input placeholder="Enter Agency Name" size="large" />
-        </Form.Item>
+                    {/* Agency */}
+                    <Form.Item
+                    label="Agency"
+                    name="agency"
+                    rules={[{ required: true, message: 'Please enter Agency!' }]}
+                    >
+                    <Input placeholder="Enter Agency Name" size="large" />
+                    </Form.Item>
 
-        {/* Owner */}
-        <Form.Item
-          label="Owner"
-          name="owner"
-          rules={[{ required: true, message: 'Please enter Owner!' }]}
-        >
-          <Input placeholder="Enter Owner Name" size="large" />
-        </Form.Item>
+                    {/* Owner */}
+                    <Form.Item
+                    label="Owner"
+                    name="owner"
+                    rules={[{ required: true, message: 'Please enter Owner!' }]}
+                    >
+                    <Input placeholder="Enter Owner Name" size="large" />
+                    </Form.Item>
 
-        {/* --- Livestock Section --- */}
-        <Divider orientation="left">Type of Livestock</Divider>
+                    {/* --- Livestock Section --- */}
+                    <Divider orientation="left">Type of Livestock</Divider>
 
-        <Form.Item
-          label="Number of Heads (Small)"
-          name="small_heads"
-          initialValue={0}
-        >
-          <Input type="number" min={0} size="large" />
-        </Form.Item>
+                    <Form.Item
+                    label="Number of Heads (Small)"
+                    name="small_heads"
+                    initialValue={0}
+                    >
+                    <Input type="number" min={0} size="large" />
+                    </Form.Item>
 
-        <Form.Item
-          label="Number of Heads  (Large)"
-          name="large_heads"
-          initialValue={0}
-        >
-          <Input type="number" min={0} size="large" />
-        </Form.Item>
+                    <Form.Item
+                    label="Number of Heads  (Large)"
+                    name="large_heads"
+                    initialValue={0}
+                    >
+                    <Input type="number" min={0} size="large" />
+                    </Form.Item>
 
-        <Divider />
+                    <Divider />
 
-        {/* Submit */}
-        <Form.Item wrapperCol={{ span: 24 }}>
-          <Button type="primary" size="large" style={{ width: '100%' }} htmlType="submit">
-            Submit
-          </Button>
-        </Form.Item>
-      </Form>
-    </Card>
-  </Col>
-</Row>
+                    {/* Submit */}
+                    <Form.Item wrapperCol={{ span: 24 }}>
+                    <Button type="primary" size="large" style={{ width: '100%' }} htmlType="submit">
+                        Submit
+                    </Button>
+                    </Form.Item>
+                </Form>
+                </Card>
+            </Col>
+            <Col xs={24} lg={16}>
+                <Card title="Saved Transactions" bordered={false} className="shadow">
+                <Table
+                    dataSource={data}
+                    rowKey="id"
+                    pagination={{ pageSize: 5 }}
+                    columns={[
+                    {
+                        title: '#',
+                        render: (_, __, index) => `${index + 1}.`,
+                        align: 'right',
+                    },
+                    {
+                        title: 'Date',
+                        dataIndex: 'date',
+                        key: 'date',
+                    },
+                    {
+                        title: 'OR #',
+                        dataIndex: 'or_no',
+                        key: 'or_no',
+                    },
+                    {
+                        title: 'Agency',
+                        dataIndex: 'agency',
+                        key: 'agency',
+                        render: (text) => text ? text.toUpperCase() : '',
+                    },
+                    {
+                        title: 'Owner',
+                        dataIndex: 'owner',
+                        key: 'owner',
+                        render: (text) => text ? text.toUpperCase() : '',
+                    },
+                    {
+                        title: 'Small Heads',
+                        dataIndex: 'small_heads',
+                        key: 'small_heads',
+                        align: 'center',
+                    },
+                    {
+                        title: 'Large Heads',
+                        dataIndex: 'large_heads',
+                        key: 'large_heads',
+                        align: 'center',
+                    },
+                    {
+                    title: 'Actions',
+                    key: 'actions',
+                    render: (_, record) => (
+                        <Dropdown.Button
+                        overlay={
+                            <Menu>
+                            {items.map((item) => (
+                                <Menu.Item key={item.key}>
+                                {item.popconfirmTitle ? (
+                                    <Popconfirm
+                                    title={item.popconfirmTitle}
+                                    onConfirm={() => handleDelete(record)}
+                                    okText="Yes"
+                                    cancelText="No"
+                                    >
+                                    <a>{item.label}</a>
+                                    </Popconfirm>
+                                ) : (
+                                    <a onClick={() => item.onClick(record)}>{item.label}</a>
+                                )}
+                                </Menu.Item>
+                            ))}
+                            </Menu>
+                        }
+                        >
+                        Actions
+                        </Dropdown.Button>
+                    ),
+                    }
+
+                    ]}
+                />
+                </Card>
+            </Col>
+            </Row>
 
 
                     </>
@@ -449,6 +490,71 @@ export default function Home() {
 
 
             <ToastContainer />
+
+            {/* EDIT MODAL */}
+            <Modal
+            title="Edit Transaction"
+            open={showModalEdit}
+            confirmLoading={confirmLoadingEdit}
+            onCancel={handleCloseModalEdit}
+            footer={null}
+            width={700}
+            >
+            <Form
+                form={formEdit}
+                layout="vertical"
+                onFinish={onFinishEdit}
+                onFinishFailed={onFinishFailedEdit}
+                initialValues={CurrentRow}
+            >
+                <Form.Item
+                label="Date"
+                name="date"
+                rules={[{ required: true, message: "Please select date!" }]}
+                >
+                <Input type="date" />
+                </Form.Item>
+
+                <Form.Item
+                label="OR #"
+                name="or_no"
+                rules={[{ required: true, message: "Please input OR number!" }]}
+                >
+                <Input />
+                </Form.Item>
+
+                <Form.Item
+                label="Agency"
+                name="agency"
+                rules={[{ required: true, message: "Please input agency!" }]}
+                >
+                <Input />
+                </Form.Item>
+
+                <Form.Item
+                label="Owner"
+                name="owner"
+                rules={[{ required: true, message: "Please input owner!" }]}
+                >
+                <Input />
+                </Form.Item>
+
+                <Form.Item label="Number of Heads (Small)" name="small_heads">
+                <Input type="number" min={0} />
+                </Form.Item>
+
+                <Form.Item label="Number of Heads (Large)" name="large_heads">
+                <Input type="number" min={0} />
+                </Form.Item>
+
+                <Form.Item>
+                <Button type="primary" htmlType="submit" style={{ width: "100%" }}>
+                    Update
+                </Button>
+                </Form.Item>
+            </Form>
+            </Modal>
+
         </Layout>
 
 
