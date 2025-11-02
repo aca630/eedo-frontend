@@ -1,5 +1,5 @@
-import { BookOutlined, CalendarOutlined, CarOutlined, CarTwoTone, DeleteOutlined, DownOutlined, EditOutlined, InsertRowBelowOutlined, InsertRowLeftOutlined, PlusCircleOutlined, PlusOutlined, SearchOutlined, ShopOutlined, ShoppingCartOutlined, ShopTwoTone, SnippetsOutlined, UserAddOutlined, UserDeleteOutlined, UserOutlined } from "@ant-design/icons";
-import { Button, Divider, Dropdown, Form, Input, Modal, Popconfirm, Select, Space, Spin, Table, Tag } from "antd";
+import { BookOutlined, BuildOutlined, CalendarOutlined, CarOutlined, CarTwoTone, ContactsOutlined, DeleteOutlined, DeliveredProcedureOutlined, DownOutlined, EditOutlined, ExclamationCircleOutlined, GroupOutlined, InsertRowBelowOutlined, InsertRowLeftOutlined, PlusCircleOutlined, PlusOutlined, SearchOutlined, ShopOutlined, ShoppingCartOutlined, ShopTwoTone, SnippetsOutlined, UserAddOutlined, UserDeleteOutlined, UsergroupAddOutlined, UserOutlined } from "@ant-design/icons";
+import { Button, DatePicker, Divider, Dropdown, Form, Input, Modal, Popconfirm, Select, Space, Spin, Table, Tag } from "antd";
 import Cookies from "js-cookie";
 import Head from "next/head";
 import { useRouter } from "next/router";
@@ -15,6 +15,7 @@ import customParseFormat from 'dayjs/plugin/customParseFormat';
 
 import dynamic from "next/dynamic";
 import Link from "next/link";
+import { GetOverAllDispenseTerminalTickets } from "../api/reports";
 
 // Dynamically import only on client
 const ReactApexChart = dynamic(() => import("react-apexcharts"), { ssr: false });
@@ -27,58 +28,50 @@ export default function Home() {
   const [to, setTo] = useState(moment().add(1, 'days').format('yyyy-MM-DD'))
   const [totalTransaction, settotalTransaction] = useState(0)
   const [data, setData] = useState([])
+
   const [data5pm, setData5pm] = useState([])
   const [data9pm, setData9pm] = useState([])
   const [dataPie, setdataPie] = useState([])
   const [isfetching, Setisfetching] = useState(false);
   const [isRender, setIsrender] = useState(false);
-  const [data2, setData2] = useState([{ item: 1 }])
 
 
-  const chartData = {
 
-    series: [
-      {
-        name: "Collections",
-        data: [168, 385, 201, 298, 187, 195, 291, 110, 215, 390, 280, 112],
-      },
-    ],
-    options: {
-      plotOptions: {
-        bar: {
-          distributed: true, // enable per-bar colors
-        },
-      },
-      colors: ["#3B82F6", "#F97316", "#10B981", "#EF4444", "#8B5CF6"],
-      chart: {
-        type: "bar",
-        height: 350,
-      },
-      stroke: {
-        curve: "smooth",
-      },
-      xaxis: {
-        categories: [
-          "Jan",
-          "Feb",
-          "Mar",
-          "Apr",
-          "May",
-          "Jun",
-          "Jul",
-          "Aug",
-          "Sep",
-          "Oct",
-          "Nov",
-          "Dec",
-        ],
-      },
-      title: {
-        text: "Monthly Collections",
-        align: "left",
-      },
-    },
-  };
+   const handleGetData = async () => {
+          Setisfetching(true)
+  
+          try {
+  
+              let ApiResponse = await GetOverAllDispenseTerminalTickets({
+                  from: from,
+                  to: to
+              })
+  
+              setData(ApiResponse?.data?.data[0])
+              // settotalTransaction(ApiResponse?.data?.data[4][0]);
+  
+          } catch (error) {
+  
+              console.log('Error getting data: ', error);
+          }
+          Setisfetching(false)
+      }
+
+    const onChange = (date, dateString) => {
+        console.log(dateString);
+
+        setFrom(dateString)
+        setTo(moment(dateString).add(1, 'days').format('yyyy-MM-DD'))
+    };
+
+    useEffect(() => {
+      handleGetData()
+    }, [from, to]);
+
+    
+    useEffect(() => {
+      handleGetData()
+    }, []);
 
   return (
 
@@ -103,8 +96,150 @@ export default function Home() {
               <div className="bg-white p-4 rounded shadow">Cemetery</div>
             </div> */}
 
-       
-   
+            <div>
+              <h1 className="text-center text-purple-600">Terminal</h1>
+            </div>
+
+            <div className="text-center">
+                                <Space><Button className="text-md"><CalendarOutlined />Date </Button> <DatePicker size={'large'} onChange={onChange} defaultValue={dayjs(from, 'YYYY-MM-DD')} /></Space>
+                            </div>
+
+                            <div className="bg-white p-6 rounded-lg shadow flex items-center space-x-4">
+
+                                <div className="flex items-center justify-center w-12 h-12 bg-gray-300 rounded-xl dark:bg-gray-800">
+
+                                    <SnippetsOutlined className=" text-4xl text-purple-600" />
+                                </div>
+
+
+                                <div>
+                                    <p className="text-4xl font-bold text-purple-600">₱{data?.total_dispensed ?? 0}</p>
+                                    <p className="text-2xl font-bold text-purple-600">Overall Terminal Tickets</p>
+                                    <h3>as of {from}</h3>
+                                </div>
+                            </div>
+
+
+
+            <main className="p-6 space-y-6">
+              {/* Stat Cards */}
+              <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
+
+                <Link href="/terminal/puv_type">
+
+                  <div className="bg-white p-6 rounded-lg shadow flex items-center space-x-4">
+
+                    <div className="flex items-center justify-center w-12 h-12 bg-gray-300 rounded-xl dark:bg-gray-800">
+
+                      <BuildOutlined className=" text-4xl text-purple-600" />
+                    </div>
+
+
+                    <div>
+                      <p className="text-2xl font-bold text-purple-600">PUV Types</p>
+
+                    </div>
+                  </div>
+
+                </Link>
+
+                <Link href="/terminal/cooperative">
+
+                  <div className="bg-white p-6 rounded-lg shadow flex items-center space-x-4">
+
+                    <div className="flex items-center justify-center w-12 h-12 bg-gray-300 rounded-xl dark:bg-gray-800">
+
+                      <InsertRowLeftOutlined className=" text-4xl text-purple-600" />
+                    </div>
+
+
+                    <div>
+                      <p className="text-2xl font-bold text-purple-600">Cooperatives</p>
+
+                    </div>
+                  </div>
+
+                </Link>
+
+                <Link href="/terminal/puv">
+
+                  <div className="bg-white p-6 rounded-lg shadow flex items-center space-x-4">
+
+                    <div className="flex items-center justify-center w-12 h-12 bg-gray-300 rounded-xl dark:bg-gray-800">
+
+                      <CarOutlined className=" text-4xl text-purple-600" />
+                    </div>
+
+
+                    <div>
+                      <p className="text-2xl font-bold text-purple-600">PUVs</p>
+
+                    </div>
+                  </div>
+
+                </Link>
+
+                <Link href="/terminal/terminals_routes">
+
+                  <div className="bg-white p-6 rounded-lg shadow flex items-center space-x-4">
+
+                    <div className="flex items-center justify-center w-12 h-12 bg-gray-300 rounded-xl dark:bg-gray-800">
+
+                      <DeliveredProcedureOutlined className=" text-4xl text-purple-600" />
+                    </div>
+
+
+                    <div>
+                      <p className="text-2xl font-bold text-purple-600">Terminals & Routes</p>
+
+                    </div>
+                  </div>
+
+                </Link>
+
+
+
+
+
+
+              </div>
+
+
+              <Divider>
+
+</Divider>
+
+
+<div className="grid grid-cols-2 gap-4 ">
+        <Link href="/terminal/void_terminal_ticket">
+
+            <div className="bg-white p-6 rounded-lg shadow flex items-center space-x-4">
+
+                <div className="flex items-center justify-center w-12 h-12 bg-gray-300 rounded-xl dark:bg-gray-800">
+
+                    <ExclamationCircleOutlined className=" text-4xl text-red-600" />
+                </div>
+
+
+                <div>
+                    <p className="text-xl font-bold text-red-600">Void Terminal Ticket</p>
+
+                </div>
+            </div>
+
+        </Link>
+    </div>
+
+            </main>
+            {/* <div className="mt-20">
+                            <ReactApexChart
+                                options={chartData.options}
+                                series={chartData.series}
+                                type="bar"
+                                height={350}
+                            />
+
+                        </div> */}
 
           </>
           : <div className="h-screen text-center noPrint">
@@ -118,7 +253,7 @@ export default function Home() {
 
 
       <ToastContainer />
-    </Layout>
+    </Layout >
 
 
   )

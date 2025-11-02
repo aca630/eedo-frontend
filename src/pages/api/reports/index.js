@@ -127,6 +127,23 @@ export async function GetAreaAndSection(body) {
       return response
     
   }
+
+  export async function GetOverAllDispenseTerminalTickets(body) {
+    const token = Cookies.get('accessToken')
+    const id = Cookies.get('id')
+  
+    const response =  await axios
+      .get(`${process.env.NEXT_PUBLIC_API_URL}/terminal/OverAllDispenseTerminalTickets?from=${body?.from}&to=${body?.to}`,{
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+      })
+
+
+      return response
+    
+  }
   
 
   
