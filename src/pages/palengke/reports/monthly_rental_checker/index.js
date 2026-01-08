@@ -230,99 +230,70 @@ export default function Home() {
 
     function displayPaymentHistory() {
 
-        const result = [];
+        const monthRows = [];
         let current = new Date(from);
         const end = new Date(to);
-
-        // normalize to first day of month
-        current.setDate(1);
-        end.setDate(1);
-
-        while (current <= end) {
-
-
-            result.push(
-                <>
-                    <div className="grid grid-cols-4 md:grid-cols-4 gap-4 mt-5 border-b-2 border-black mb-2">
-
-                        <p className="text-left">{`${current.getFullYear()}-${String(current.getMonth() + 1).padStart(2, '0')}`}</p>
-
-                        {
-                            data?.map((item, index) => {
-                                console.log(moment(item?.paid_date).format('yyyy-MM'), `--`, `${current.getFullYear()}-${String(current.getMonth() + 1).padStart(2, '0')}`);
-                                if (moment(item?.paid_date).format('yyyy-MM') == `${current.getFullYear()}-${String(current.getMonth() + 1).padStart(2, '0')}`) {
-                                    return (
-                                        <>
-                                            <p className="text-left">{item?.or_number}</p>
-                                            <p className="text-left">{item?.paid_date}</p>
-                                            <p className="text-left text-green-500">PAID</p>
-                                        </>
-                                    )
-                                }
-                                else {
-                                    return (
-                                        <>
-                                            <p className="text-left">---</p>
-                                            <p className="text-left">---</p>
-                                            <p className="text-left text-red-500">UNPAID</p>
-                                        </>
-                                    )
-                                }
-                            })
-                        }
-
-                    </div>
-                </>
-                // `${current.getFullYear()}-${String(current.getMonth() + 1).padStart(2, '0')}`
-            );
-
-            // move to next month
-            current.setMonth(current.getMonth() + 1);
+      
+        while (current<= end ) {
+          const month = moment(current).format('YYYY-MM');
+      
+          const paidItem = data.find(
+            item => moment(item.paid_date).format('YYYY-MM') === month
+          );
+      
+          monthRows.push(
+            <tr key={month}>
+              <td className="text-left MyTableBorder">{month}</td>
+              <td className="text-left MyTableBorder">{paidItem ? paidItem.or_number : '-'}</td>
+              <td className="text-left MyTableBorder">{paidItem?.paid_date}</td>
+              <td className="text-left MyTableBorder">
+                {paidItem ? (
+                  <span className="text-green-500">PAID</span>
+                ) : (
+                  <span className="text-red-500">UNPAID</span>
+                )}
+              </td>
+            </tr>
+          );
+      
+          // Move to next month
+          current.setMonth(current.getMonth() + 1);
         }
 
-
-        return (
-            result
-        )
-
+        return monthRows;
     }
 
 
     function displayBalance() {
 
-        const result = [];
+    
+  
+        let balanace = 0
+
+        const monthRows = [];
         let current = new Date(from);
         const end = new Date(to);
-
-        // normalize to first day of month
-        current.setDate(1);
-        end.setDate(1);
-        let balanace = 0
-        while (current <= end) {
-
-
-            {
-                data?.map((item, index) => {
-                    console.log(moment(item?.paid_date).format('yyyy-MM'), `--`, `${current.getFullYear()}-${String(current.getMonth() + 1).padStart(2, '0')}`);
-                    if (moment(item?.paid_date).format('yyyy-MM') == `${current.getFullYear()}-${String(current.getMonth() + 1).padStart(2, '0')}`) {
-
-                    }
-                    else {
-                        balanace += parseFloat(data?.[0]?.rent_per_month)
-                    }
-                })
-            }
-            // move to next month
-            current.setMonth(current.getMonth() + 1);
+      
+        while (current<= end ) {
+          const month = moment(current).format('YYYY-MM');
+      
+          const paidItem = data.find(
+            item => moment(item.paid_date).format('YYYY-MM') === month
+          );
+      
+         if(!paidItem){
+            balanace+=paidItem?.rent_per_month ?? data?.[0]?.rent_per_month ?? 0;
+         }
+      
+          // Move to next month
+          current.setMonth(current.getMonth() + 1);
         }
+   
 
-
-        return balanace?.toLocaleString(undefined, { minimumFractionDigits: 2   })
+        return balanace?.toLocaleString(undefined, { minimumFractionDigits: 2 })
 
 
     }
-
-
 
     return (
 
@@ -358,48 +329,80 @@ export default function Home() {
 
 
                                     <>
-                                        <div className="grid grid-cols-2 md:grid-cols-3 gap-4 mt-10 border-b-2 border-black mb-2">
-                                            <div>
-                                                <p className="text-left">Stall no.</p>
-                                                <p className="text-left">Awardee name</p>
-                                                <p className="text-left">Occupant name</p>
-                                                <p className="text-left">Rentee</p>
-                                                <p className="text-left">Business permit</p>
-                                                <p className="text-left">Area</p>
-                                                <p className="text-left">Section</p>
-                                                <p className="text-left">Monthly rental</p>
-                                                <p className="text-left">Collector</p>
-                                            </div>
-                                            <div>
-                                                <p className="text-left">{data?.[0]?.stall_no ?? '---'}</p>
-                                                <p className="text-left">{data?.[0]?.awardee_name ?? '---'}</p>
-                                                <p className="text-left">{data?.[0]?.occupant_name ?? '---'}</p>
-                                                <p className="text-left">{data?.[0]?.is_rentee == 1 ? 'YES' : 'NO' ?? '---'}</p>
-                                                <p className="text-left">{data?.[0]?.is_with_business_permit == 1 ? 'YES' : 'NO' ?? '---'}</p>
-                                                <p className="text-left">{data?.[0]?.area_name ?? '---'}</p>
-                                                <p className="text-left">{data?.[0]?.section_name ?? '---'}</p>
-                                                <p className="text-left">{data?.[0]?.rent_per_month ?? '---'}</p>
-                                                <p className="text-left">{data?.[0]?.collector_name ?? '---'}</p>
-                                            </div>
-                                        </div>
 
-                                        <h2 className="text-center">Payment History</h2>
+                                        <table id="MyTable" className="w-full mt-10">
+                                            <thead>
+                                                <tr>
+                                                    <th className="text-left MyTableBorder" colSpan={2}>Stall no.</th>
+                                                    <td className="text-left MyTableBorder" colSpan={2}>{data?.[0]?.stall_no ?? '---'}</td>
+                                                </tr>
 
 
-                                        <div className="grid grid-cols-4 md:grid-cols-4 gap-4 mt-5 border-b-2 border-black mb-2">
+                                                <tr>
+                                                    <th className="text-left MyTableBorder" colSpan={2}>Awardee name</th>
+                                                    <td className="text-left MyTableBorder" colSpan={2}>{data?.[0]?.awardee_name ?? '---'}</td>
+                                                </tr>
 
-                                            <p className="text-left">Date</p>
-                                            <p className="text-left">OR No.</p>
-                                            <p className="text-left">Paid Date</p>
-                                            <p className="text-left">Satus</p>
+                                                <tr>
+                                                    <th className="text-left MyTableBorder" colSpan={2}>Occuthant name</th>
+                                                    <td className="text-left MyTableBorder" colSpan={2}>{data?.[0]?.occupant_name ?? '---'}</td>
+                                                </tr>
 
-                                        </div>
+                                                <tr>
+                                                    <th className="text-left MyTableBorder" colSpan={2}>Rentee</th>
+                                                    <td className="text-left MyTableBorder" colSpan={2}>{data?.[0]?.is_rentee == 1 ? 'YES' : 'NO' ?? '---'}</td>
+                                                </tr>
+
+                                                <tr>
+                                                    <th className="text-left MyTableBorder" colSpan={2}>Business thermit</th>
+                                                    <td className="text-left MyTableBorder" colSpan={2}>{data?.[0]?.is_with_business_permit == 1 ? 'YES' : 'NO' ?? '---'}</td>
+                                                </tr>
+
+                                                <tr>
+                                                    <th className="text-left MyTableBorder" colSpan={2}>Area</th>
+                                                    <td className="text-left MyTableBorder" colSpan={2}>{data?.[0]?.area_name ?? '---'}</td>
+                                                </tr>
+
+                                                <tr>
+                                                    <th className="text-left MyTableBorder" colSpan={2}>Section</th>
+                                                    <td className="text-left MyTableBorder" colSpan={2}>{data?.[0]?.section_name ?? '---'}</td>
+                                                </tr>
+
+                                                <tr>
+                                                    <th className="text-left MyTableBorder" colSpan={2}>Monthly rental</th>
+                                                    <td className="text-left MyTableBorder" colSpan={2}>{data?.[0]?.rent_per_month ?? '---'}</td>
+                                                </tr>
+
+                                                <tr>
+                                                    <th className="text-left MyTableBorder" colSpan={2}>Collector</th>
+                                                    <td className="text-left MyTableBorder" colSpan={2}>{data?.[0]?.collector_name ?? '---'}</td>
+                                                </tr>
+                                            </thead>
+
+                                            <thead>
+                                                <tr>
+                                                    <th className="text-left" colSpan={4}>    <h2 className="text-center">Payment History</h2></th>
+                                                </tr>
+                                            </thead>
+
+                                            <thead>
+                                                <tr>
+                                                    <th className="text-left MyTableBorder text-center ">Date</th>
+                                                    <th className="text-left MyTableBorder text-center ">OR No.</th>
+                                                    <th className="text-left MyTableBorder text-center ">Paid Date</th>
+                                                    <th className="text-left MyTableBorder text-center ">Satus</th>
+                                                </tr>
+                                            </thead>
+
+                                            <tbody>
+                                                {displayPaymentHistory()}
+                                               
+                                            </tbody>
+                                        </table>
 
 
 
-                                        {
-                                            displayPaymentHistory()
-                                        }
+
 
                                         <div>
                                             <h1> Balance: ₱{displayBalance()}</h1>
