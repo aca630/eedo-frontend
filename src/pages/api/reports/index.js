@@ -144,6 +144,25 @@ export async function GetAreaAndSection(body) {
       return response
     
   }
+
+
+
+  export async function GetMonthlyRentalReports(body) {
+    const token = Cookies.get('accessToken')
+    const id = Cookies.get('id')
+  
+    const response =  await axios
+      .get(`${process.env.NEXT_PUBLIC_API_URL}/admin/MontlyRentalReports?from=${body?.from}&to=${body?.to}`,{
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+      })
+
+
+      return response
+    
+  }
   
 
   
