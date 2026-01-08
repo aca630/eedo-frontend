@@ -248,7 +248,7 @@ export default function Home() {
 
                         <div>
                             <div className="text-center">
-                                <Space><Button className="text-md"><CalendarOutlined />Date </Button> <DatePicker size={'large'} onChange={onChange} defaultValue={dayjs(from, 'YYYY-MM-DD')} /></Space>
+                                <Space><Button className="text-md"><CalendarOutlined />Month </Button> <DatePicker picker="month"  size={'large'} onChange={onChange} defaultValue={dayjs(from, 'YYYY-MM')} /></Space>
                             </div>
 
                
@@ -265,12 +265,12 @@ export default function Home() {
                                                 <th  className="MyTableBorder font2">Stall no</th>
                                                 <th className="MyTableBorder font2 text-center">awardee name</th>
                                                 <th className="MyTableBorder font2 text-center">occupant name</th>
-                                                <th className="MyTableBorder font2 text-center">rentee</th>
+                                                {/* <th className="MyTableBorder font2 text-center">rentee</th>
                                                 <th className="MyTableBorder font2 text-center">Business permit</th>
                                                 <th className="MyTableBorder font2 text-center">area name</th>
                                                 <th className="MyTableBorder font2 text-center">section name</th>
                                                 <th className="MyTableBorder font2 text-center">rent per month</th>
-                                                <th className="MyTableBorder font2 text-center">collector name</th>
+                                                <th className="MyTableBorder font2 text-center">collector name</th> */}
                                                 <th className="MyTableBorder font2 text-center">OR No.</th>
                                                 <th className="MyTableBorder font2 text-center">Paid date</th>
                                                 <th className="MyTableBorder font2 text-center">payment status</th>
@@ -288,12 +288,12 @@ export default function Home() {
                                                     <td className="MyTableBorder font2 text-center">{item?.stall_no}</td>
                                                     <td className="MyTableBorder font2 text-center">{item?.awardee_name}</td>
                                                     <td className="MyTableBorder font2 text-center">{item?.occupant_name}</td>
-                                                    <td className="MyTableBorder font2 text-center">{item?.is_rentee ==1?'yes':'no'}</td>
+                                                    {/* <td className="MyTableBorder font2 text-center">{item?.is_rentee ==1?'yes':'no'}</td>
                                                     <td className="MyTableBorder font2 text-center">{item?.is_with_business_permit  ==1?'yes':'no'}</td>
                                                     <td className="MyTableBorder font2 text-center">{item?.area_name}</td>
                                                     <td className="MyTableBorder font2 text-center">{item?.section_name}</td>
                                                     <td className="MyTableBorder font2 text-center">{item?.rent_per_month}</td>
-                                                    <td className="MyTableBorder font2 text-center">{item?.collector_name}</td>
+                                                    <td className="MyTableBorder font2 text-center">{item?.collector_name}</td> */}
                                                     <td className="MyTableBorder font2 text-center"><span className={item?.or_number=='N/A'?'':'font-bold text-green-600'}>{item?.or_number} </span></td>
                                                     <td className="MyTableBorder font2 text-center"><span className={item?.paid_date=='N/A'?'':'font-bold text-green-600'}>{item?.paid_date} </span></td>
                                                     <td className="MyTableBorder font2 text-center"><span className={item?.payment_status=='Paid'?'text-green-600':'text-red-600'}>{item?.payment_status}</span></td> 
