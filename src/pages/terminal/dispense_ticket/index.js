@@ -1,0 +1,271 @@
+import { BookOutlined, BuildOutlined, CalendarOutlined, CarOutlined, CarTwoTone, DeleteOutlined, DownOutlined, EditOutlined, GroupOutlined, InsertRowBelowOutlined, InsertRowLeftOutlined, PlusCircleOutlined, PlusOutlined, SearchOutlined, ShopOutlined, ShoppingCartOutlined, ShopTwoTone, SnippetsOutlined, UserAddOutlined, UserDeleteOutlined, UsergroupAddOutlined, UserOutlined } from "@ant-design/icons";
+import { Button, Card, DatePicker, Divider, Dropdown, Form, Input, Menu, Modal, Popconfirm, Select, Space, Spin, Table, Tag } from "antd";
+import Cookies from "js-cookie";
+import Head from "next/head";
+import { useRouter } from "next/router";
+import { useEffect, useState } from "react";
+import Layout from "../../layouts";
+import { ToastContainer, toast } from 'react-toastify';
+import moment from "moment";
+import React from 'react';
+import dayjs from 'dayjs';
+import customParseFormat from 'dayjs/plugin/customParseFormat';
+import dynamic from "next/dynamic";
+import Link from "next/link";
+import { deleteArea, GetArea, postArea, putArea } from "../../api/area";
+import { GetOverAllDispenseCashTickets, GetOverAllDispenseCashTicketsPerCollector, GetOverAllDispenseCashTicketsPerName, GetOverAllMonthlyPayment, GetOverAllMonthlyPaymentPerArea, GetOverAllMonthlyPaymentPerCollector, GetTerminalTicketPerPlate } from "../../api/reports";
+import { Get_Puv } from "../../api/puv";
+
+// Dynamically import only on client
+const ReactApexChart = dynamic(() => import("react-apexcharts"), { ssr: false });
+
+dayjs.extend(customParseFormat);
+
+export default function Home() {
+    const [isfetching, Setisfetching] = useState(false);
+    const [data, setData] = useState([])
+        const [PUVdata, setPUVData] = useState([])
+    const [data_per_name, set_data_per_name] = useState([])
+    const [data_per_collector, set_data_per_collector] = useState([])
+    const [openAdd, setOpenAdd] = useState(false);
+
+    const [confirmLoadingAdd, setConfirmLoadingAdd] = useState(false);
+    const [form] = Form.useForm();
+    const [confirmLoadingEdit, setConfirmLoadingEdit] = useState(false);
+    const [showModalEdit, setShowModalEdit] = useState(false);
+    const [CurrentRow, setCurrentRow] = useState(null);
+    const [formEdit] = Form.useForm();
+    const [from, setFrom] = useState(moment().format('yyyy-MM-DD'))
+    const [to, setTo] = useState(moment().add(1, 'days').format('yyyy-MM-DD'))
+
+     const [puvId, setPuvId] = useState(8);
+  const [loading, setLoading] = useState(false);
+
+    const handleCancelAdd = () => {
+        setOpenAdd(false);
+    }
+    const showModalAdd = () => {
+        setOpenAdd(true);
+    };
+
+
+
+
+    const handleGetData = async () => {
+        Setisfetching(true)
+
+        try {
+
+            let ApiResponse = await GetTerminalTicketPerPlate({
+                puv_id:puvId,
+                from: from,
+                to: to
+            })
+
+            setData(ApiResponse?.data?.data)
+            // settotalTransaction(ApiResponse?.data?.data[4][0]);
+
+        } catch (error) {
+
+            console.log('Error getting data: ', error);
+        }
+        Setisfetching(false)
+    }
+
+
+
+
+ const handleGetPUVData = async () => {
+        Setisfetching(true)
+
+        try {
+
+            let ApiResponse = await Get_Puv()
+
+            setPUVData(ApiResponse?.data?.data)
+            // settotalTransaction(ApiResponse?.data?.data[4][0]);
+
+        } catch (error) {
+
+            console.log('Error getting data: ', error);
+        }
+        Setisfetching(false)
+    }
+
+
+
+
+    const onChange = (date, dateString) => {
+        console.log(dateString);
+
+        setFrom(dateString)
+        setTo(moment(dateString).add(1, 'days').format('yyyy-MM-DD'))
+    };
+
+
+    useEffect(() => {
+
+        handleGetData();
+   
+
+    }, [from, to])
+
+    useEffect(() => {
+        handleGetData();
+        handleGetPUVData()
+    }, []);
+
+
+      const totalAmount = data?.reduce((sum, item) => {
+    return sum + Number(item.amount || 0);
+  }, 0);
+
+   const columns = [
+    {
+      title: "Terminal",
+      dataIndex: "terminal",
+      key: "terminal",
+    },
+    {
+      title: "Route",
+      dataIndex: "route",
+      key: "route",
+    },
+    {
+      title: "Amount",
+      dataIndex: "amount",
+      key: "amount",
+      align: "right",
+      render: (value) => `₱${Number(value || 0).toFixed(2)}`,
+    },
+    {
+      title: "First Trip",
+      dataIndex: "is_first_trip",
+      key: "is_first_trip",
+      render: (value) =>
+        value == 1 ? (
+          <Tag color="green">YES</Tag>
+        ) : (
+          <Tag color="default">NO</Tag>
+        ),
+    },
+    {
+      title: "Void",
+      dataIndex: "is_void",
+      key: "is_void",
+      render: (value) =>
+        value == 1 ? (
+          <Tag color="red">VOID</Tag>
+        ) : (
+          <Tag color="blue">VALID</Tag>
+        ),
+    },
+  ];
+
+    return (
+
+
+        <Layout>
+            <Head>
+                <title>EEDO</title>
+                <meta name="description" content="Generated by create next app" />
+                <meta name="viewport" content="width=device-width, initial-scale=1" />
+                <link rel="icon" href="/favicon.ico" />
+            </Head>
+
+            {
+
+                !isfetching ?
+                    <>
+
+                        <div>
+                            <h1 className="text-center text-purple-600">Dispensed Ticker Per Plate #</h1>
+
+                            <div className="text-center">
+                                <Space><Button className="text-md"><CalendarOutlined />Date </Button> <DatePicker size={'large'} onChange={onChange} defaultValue={dayjs(from, 'YYYY-MM-DD')} /></Space>
+                            </div>
+
+<div>
+    <Select
+  size="large"
+  showSearch
+  placeholder="Select PUV"
+//   value={puvId}
+  onChange={(value) =>{
+    console.log(value);
+    
+  }}
+  style={{ width: 250 }}
+  optionFilterProp="label"
+
+  options={PUVdata.map((item) => ({
+    value: item.id,
+    label: `${item.plate_number}`,
+  }))}
+
+/>
+</div>
+                            <div className="bg-white p-6 rounded-lg shadow flex items-center space-x-4">
+
+                                
+ <div className="p-4">
+    
+
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
+        <Card>
+          <p className="text-gray-500">Total Records</p>
+          <h2 className="text-2xl font-bold">{data.length}</h2>
+        </Card>
+
+        <Card>
+          <p className="text-gray-500">Total Amount</p>
+          <h2 className="text-2xl font-bold">
+            ₱{totalAmount.toFixed(2)}
+          </h2>
+        </Card>
+
+        <Card>
+          <p className="text-gray-500">PUV ID</p>
+          <h2 className="text-2xl font-bold">{puvId?.plate_number}</h2>
+        </Card>
+      </div>
+
+      <Card className="shadow rounded-lg">
+        <Table
+          rowKey={(record, index) => index}
+          columns={columns}
+          dataSource={data}
+          loading={loading}
+          bordered
+          pagination={{
+            pageSize: 10,
+            showSizeChanger: true,
+          }}
+        />
+      </Card>
+    </div>
+
+
+
+
+                    </div>
+
+                        </div>
+
+
+                    </>
+                    : <div className="h-screen text-center noPrint">
+                        <Spin size="large" tip='Generating...' className="mt-20" />
+                    </div>
+            }
+
+
+
+
+            <ToastContainer />
+        </Layout>
+
+
+    )
+
+}

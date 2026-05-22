@@ -1,4 +1,4 @@
-import { BookOutlined, BuildOutlined, CalendarOutlined, CarOutlined, CarTwoTone, ContactsOutlined, DeleteOutlined, DeliveredProcedureOutlined, DownOutlined, EditOutlined, ExclamationCircleOutlined, GroupOutlined, InsertRowBelowOutlined, InsertRowLeftOutlined, PlusCircleOutlined, PlusOutlined, SearchOutlined, ShopOutlined, ShoppingCartOutlined, ShopTwoTone, SnippetsOutlined, UserAddOutlined, UserDeleteOutlined, UsergroupAddOutlined, UserOutlined } from "@ant-design/icons";
+import { BookOutlined, BuildOutlined, CalendarOutlined, CarOutlined, CarTwoTone, ContactsOutlined, DeleteOutlined, DeliveredProcedureOutlined, DownOutlined, EditOutlined, ExclamationCircleOutlined, GroupOutlined, InsertRowBelowOutlined, InsertRowLeftOutlined, PlusCircleOutlined, PlusOutlined, SearchOutlined, ShopOutlined, ShoppingCartOutlined, ShopTwoTone, SnippetsOutlined, TagOutlined, UserAddOutlined, UserDeleteOutlined, UsergroupAddOutlined, UserOutlined } from "@ant-design/icons";
 import { Button, DatePicker, Divider, Dropdown, Form, Input, Modal, Popconfirm, Select, Space, Spin, Table, Tag } from "antd";
 import Cookies from "js-cookie";
 import Head from "next/head";
@@ -197,6 +197,25 @@ export default function Home() {
 
                 </Link>
 
+
+
+     <Link href="/terminal/dispense_ticket">
+
+                  <div className="bg-white p-6 rounded-lg shadow flex items-center space-x-4">
+
+                    <div className="flex items-center justify-center w-12 h-12 bg-gray-300 rounded-xl dark:bg-gray-800">
+
+                      <TagOutlined className=" text-4xl text-purple-600" />
+                    </div>
+
+
+                    <div>
+                      <p className="text-2xl font-bold text-purple-600">Dispense Tickets per Plate #</p>
+
+                    </div>
+                  </div>
+
+                </Link>
 
 
 
