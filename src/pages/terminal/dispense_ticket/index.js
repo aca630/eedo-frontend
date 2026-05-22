@@ -22,105 +22,105 @@ const ReactApexChart = dynamic(() => import("react-apexcharts"), { ssr: false })
 dayjs.extend(customParseFormat);
 
 export default function Home() {
-    const [isfetching, Setisfetching] = useState(false);
-    const [data, setData] = useState([])
-        const [PUVdata, setPUVData] = useState([])
-    const [data_per_name, set_data_per_name] = useState([])
-    const [data_per_collector, set_data_per_collector] = useState([])
-    const [openAdd, setOpenAdd] = useState(false);
+  const [isfetching, Setisfetching] = useState(false);
+  const [data, setData] = useState([])
+  const [PUVdata, setPUVData] = useState([])
+  const [data_per_name, set_data_per_name] = useState([])
+  const [data_per_collector, set_data_per_collector] = useState([])
+  const [openAdd, setOpenAdd] = useState(false);
 
-    const [confirmLoadingAdd, setConfirmLoadingAdd] = useState(false);
-    const [form] = Form.useForm();
-    const [confirmLoadingEdit, setConfirmLoadingEdit] = useState(false);
-    const [showModalEdit, setShowModalEdit] = useState(false);
-    const [CurrentRow, setCurrentRow] = useState(null);
-    const [formEdit] = Form.useForm();
-    const [from, setFrom] = useState(moment().format('yyyy-MM-DD'))
-    const [to, setTo] = useState(moment().add(1, 'days').format('yyyy-MM-DD'))
+  const [confirmLoadingAdd, setConfirmLoadingAdd] = useState(false);
+  const [form] = Form.useForm();
+  const [confirmLoadingEdit, setConfirmLoadingEdit] = useState(false);
+  const [showModalEdit, setShowModalEdit] = useState(false);
+  const [CurrentRow, setCurrentRow] = useState(null);
+  const [formEdit] = Form.useForm();
+  const [from, setFrom] = useState(moment().format('yyyy-MM-DD'))
+  const [to, setTo] = useState(moment().add(1, 'days').format('yyyy-MM-DD'))
 
-     const [puvId, setPuvId] = useState(8);
+  const [puvId, setPuvId] = useState(8);
   const [loading, setLoading] = useState(false);
 
-    const handleCancelAdd = () => {
-        setOpenAdd(false);
+  const handleCancelAdd = () => {
+    setOpenAdd(false);
+  }
+  const showModalAdd = () => {
+    setOpenAdd(true);
+  };
+
+
+
+
+  const handleGetData = async () => {
+    Setisfetching(true)
+
+    try {
+
+      let ApiResponse = await GetTerminalTicketPerPlate({
+        puv_id: puvId?.id,
+        from: from,
+        to: to
+      })
+
+      setData(ApiResponse?.data?.data)
+      // settotalTransaction(ApiResponse?.data?.data[4][0]);
+
+    } catch (error) {
+
+      console.log('Error getting data: ', error);
     }
-    const showModalAdd = () => {
-        setOpenAdd(true);
-    };
+    Setisfetching(false)
+  }
 
 
 
 
-    const handleGetData = async () => {
-        Setisfetching(true)
+  const handleGetPUVData = async () => {
+    Setisfetching(true)
 
-        try {
+    try {
 
-            let ApiResponse = await GetTerminalTicketPerPlate({
-                puv_id:puvId,
-                from: from,
-                to: to
-            })
+      let ApiResponse = await Get_Puv()
 
-            setData(ApiResponse?.data?.data)
-            // settotalTransaction(ApiResponse?.data?.data[4][0]);
+      setPUVData(ApiResponse?.data?.data)
+      // settotalTransaction(ApiResponse?.data?.data[4][0]);
 
-        } catch (error) {
+    } catch (error) {
 
-            console.log('Error getting data: ', error);
-        }
-        Setisfetching(false)
+      console.log('Error getting data: ', error);
     }
+    Setisfetching(false)
+  }
 
 
 
 
- const handleGetPUVData = async () => {
-        Setisfetching(true)
+  const onChange = (date, dateString) => {
+    console.log(dateString);
 
-        try {
-
-            let ApiResponse = await Get_Puv()
-
-            setPUVData(ApiResponse?.data?.data)
-            // settotalTransaction(ApiResponse?.data?.data[4][0]);
-
-        } catch (error) {
-
-            console.log('Error getting data: ', error);
-        }
-        Setisfetching(false)
-    }
+    setFrom(dateString)
+    setTo(moment(dateString).add(1, 'days').format('yyyy-MM-DD'))
+  };
 
 
+  useEffect(() => {
+
+    handleGetData();
 
 
-    const onChange = (date, dateString) => {
-        console.log(dateString);
+  }, [from, to, puvId]);
 
-        setFrom(dateString)
-        setTo(moment(dateString).add(1, 'days').format('yyyy-MM-DD'))
-    };
-
-
-    useEffect(() => {
-
-        handleGetData();
-   
-
-    }, [from, to])
-
-    useEffect(() => {
-        handleGetData();
-        handleGetPUVData()
-    }, []);
+  useEffect(() => {
+    handleGetData();
+    handleGetPUVData()
+  }, []);
 
 
-      const totalAmount = data?.reduce((sum, item) => {
+  const totalAmount = data?.reduce((sum, item) => {
     return sum + Number(item.amount || 0);
   }, 0);
 
-   const columns = [
+  const columns = [
     {
       title: "Terminal",
       dataIndex: "terminal",
@@ -162,110 +162,105 @@ export default function Home() {
     },
   ];
 
-    return (
+  return (
 
 
-        <Layout>
-            <Head>
-                <title>EEDO</title>
-                <meta name="description" content="Generated by create next app" />
-                <meta name="viewport" content="width=device-width, initial-scale=1" />
-                <link rel="icon" href="/favicon.ico" />
-            </Head>
+    <Layout>
+      <Head>
+        <title>EEDO</title>
+        <meta name="description" content="Generated by create next app" />
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <link rel="icon" href="/favicon.ico" />
+      </Head>
 
-            {
+      {
 
-                !isfetching ?
-                    <>
+        !isfetching ?
+          <>
 
-                        <div>
-                            <h1 className="text-center text-purple-600">Dispensed Ticker Per Plate #</h1>
+            <div>
+              <h1 className="text-center text-purple-600">Dispensed Ticker Per Plate #</h1>
 
-                            <div className="text-center">
-                                <Space><Button className="text-md"><CalendarOutlined />Date </Button> <DatePicker size={'large'} onChange={onChange} defaultValue={dayjs(from, 'YYYY-MM-DD')} /></Space>
-                            </div>
+              <div className="text-center">
+                <Space><Button className="text-md"><CalendarOutlined />Date </Button> <DatePicker size={'large'} onChange={onChange} defaultValue={dayjs(from, 'YYYY-MM-DD')} /></Space>
+              </div>
 
-<div>
-    <Select
-  size="large"
-  showSearch
-  placeholder="Select PUV"
-//   value={puvId}
-  onChange={(value) =>{
-    console.log(value);
-    
-  }}
-  style={{ width: 250 }}
-  optionFilterProp="label"
+              <div className="text-center mt-2 mb-2">
+                <Select
+                  size="large"
+                  showSearch
+                  placeholder="Select PUV"
+                  style={{ width: 250 }}
+                  optionFilterProp="label"
+                  options={PUVdata.map((item) => ({
+                    value: item.id,
+                    label: item.plate_number,
+                    item, // include full object
+                  }))}
+                  onChange={(value, option) => {
+                    // console.log("Selected ID:", value);
+                    // console.log("Selected Plate Number:", option.label);
 
-  options={PUVdata.map((item) => ({
-    value: item.id,
-    label: `${item.plate_number}`,
-  }))}
+                    // // full selected row
+                    // console.log("Selected Item:", option.item);
 
-/>
-</div>
-                            <div className="bg-white p-6 rounded-lg shadow flex items-center space-x-4">
+                    // // example
+                    // const selectedId = value;
+                    // const selectedPlateNumber = option.label;
+                    setPuvId(option.item);
+                  }}
+                />
+              </div>
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
+                <Card>
+                  <p className="text-gray-500">Total Records</p>
+                  <h2 className="text-2xl font-bold">{data.length}</h2>
+                </Card>
 
-                                
- <div className="p-4">
-    
+                <Card>
+                  <p className="text-gray-500">Total Amount</p>
+                  <h2 className="text-2xl font-bold">
+                    ₱{totalAmount.toFixed(2)}
+                  </h2>
+                </Card>
 
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
-        <Card>
-          <p className="text-gray-500">Total Records</p>
-          <h2 className="text-2xl font-bold">{data.length}</h2>
-        </Card>
-
-        <Card>
-          <p className="text-gray-500">Total Amount</p>
-          <h2 className="text-2xl font-bold">
-            ₱{totalAmount.toFixed(2)}
-          </h2>
-        </Card>
-
-        <Card>
-          <p className="text-gray-500">PUV ID</p>
-          <h2 className="text-2xl font-bold">{puvId?.plate_number}</h2>
-        </Card>
-      </div>
-
-      <Card className="shadow rounded-lg">
-        <Table
-          rowKey={(record, index) => index}
-          columns={columns}
-          dataSource={data}
-          loading={loading}
-          bordered
-          pagination={{
-            pageSize: 10,
-            showSizeChanger: true,
-          }}
-        />
-      </Card>
-    </div>
+                <Card>
+                  <p className="text-gray-500">PUV Plate #</p>
+                  <h2 className="text-2xl font-bold">{puvId?.plate_number}</h2>
+                </Card>
+              </div>
 
 
+              <Card className="shadow rounded-lg">
+                <Table
+                  rowKey={(record, index) => index}
+                  columns={columns}
+                  dataSource={data}
+                  loading={loading}
+                  bordered
+                  pagination={{
+                    pageSize: 10,
+                    showSizeChanger: true,
+                  }}
+                />
+              </Card>
+
+            </div>
 
 
-                    </div>
-
-                        </div>
-
-
-                    </>
-                    : <div className="h-screen text-center noPrint">
-                        <Spin size="large" tip='Generating...' className="mt-20" />
-                    </div>
-            }
+          </>
+          : <div className="h-screen text-center noPrint">
+            <Spin size="large" tip='Generating...' className="mt-20" />
+          </div>
+      }
 
 
 
 
-            <ToastContainer />
-        </Layout>
+      <ToastContainer />
+    </Layout>
 
 
-    )
+  )
 
 }
